@@ -31,6 +31,9 @@ function civicrm_api3_dedupe_monitor_Scan($params) {
   foreach ($ruleMonitors as $ruleMonitor) {
     $ruleCompleted = FALSE;
     $limit = $ruleMonitor['scan_limit'];
+    if (!$limit) {
+      $limit = CRM_Dupmon_Util::getNextLimitQuantum();
+    }
     while (!$ruleCompleted) {
       $cids = CRM_Dupmon_Util::getScanContactList($ruleMonitor['contact_type'], $ruleMonitor['min_cid'], $limit);
       try {
