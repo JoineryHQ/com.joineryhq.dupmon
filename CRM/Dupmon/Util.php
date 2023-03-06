@@ -126,8 +126,10 @@ class CRM_Dupmon_Util {
     $quanta = self::getLimitQuanta();
     rsort($quanta);
     if ($currentQuantum) {
+      CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: currentQuanum = $currentQuantum");
       foreach ($quanta as $quantum) {
         if ($quantum < $currentQuantum) {
+          CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: found next: $quantum");
           return $quantum;
         }
         // As a last resort, return limit of "0".
@@ -135,6 +137,7 @@ class CRM_Dupmon_Util {
       }
     }
     else {
+      CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: NOT found next, returning max.");
       return max($quanta);
     }
   }
