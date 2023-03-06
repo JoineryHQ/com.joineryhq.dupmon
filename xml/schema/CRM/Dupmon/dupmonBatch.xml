@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Dupmon</base>
+  <class>DupmonBatch</class>
+  <name>civicrm_dupmon_batch</name>
+  <comment>Dedupe Monitor batch scan result</comment>
+  <log>true</log>
+
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique DupmonRuleMonitor ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>group_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Group</comment>
+  </field>
+  <foreignKey>
+    <name>group_id</name>
+    <table>civicrm_group</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>rule_group_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Dedupe Rule Group</comment>
+  </field>
+  <foreignKey>
+    <name>rule_group_id</name>
+    <table>civicrm_dedupe_rule_group</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>created</name>
+    <default>CURRENT_TIMESTAMP</default>
+    <type>datetime</type>
+    <comment>Date/Time created</comment>
+  </field>
+
+</table>

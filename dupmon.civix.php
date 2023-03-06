@@ -304,5 +304,16 @@ function _dupmon_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID) {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_entityTypes
  */
 function _dupmon_civix_civicrm_entityTypes(&$entityTypes) {
-  $entityTypes = array_merge($entityTypes, []);
+  $entityTypes = array_merge($entityTypes, [
+    'CRM_Dupmon_DAO_DupmonBatch' => [
+      'name' => 'DupmonBatch',
+      'class' => 'CRM_Dupmon_DAO_DupmonBatch',
+      'table' => 'civicrm_dupmon_batch',
+    ],
+    'CRM_Dupmon_DAO_DupmonRuleMonitor' => [
+      'name' => 'DupmonRuleMonitor',
+      'class' => 'CRM_Dupmon_DAO_DupmonRuleMonitor',
+      'table' => 'civicrm_dupmon_rule_monitor',
+    ],
+  ]);
 }

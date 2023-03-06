@@ -6,14 +6,51 @@ class CRM_Dupmon_Util {
    * FIXME: STUB.
    */
   public static function getRuleMonitors() {
-    return [
-      [
-        'rule_id' => 4,
-        'limit' => NULL,
-        'minimum_cid' => 0,
-        'contact_type' => 'individual',
-      ]
+    $ruleMonitors = [];
+    $dupmonRuleMonitorGet = civicrm_api3('dupmonRuleMonitor', 'get', [
+      'options' => [
+        'limit' => 0,
+      ],
+      'sequential' => 1,
+      'api.RuleGroup.get' => [],
+    ]);
+
+    foreach ($dupmonRuleMonitorGet['values'] as $dupmonRuleMonitor) {
+      $ruleMonitor = $dupmonRuleMonitor;
+      unset($ruleMonitor['api.RuleGroup.get']);
+      $ruleMonitor['contact_type'] = $dupmonRuleMonitor['api.RuleGroup.get']['values'][0]['contact_type'];
+      $ruleMonitors[] = $ruleMonitor;
+    }
+    return $ruleMonitors;
+  }
+
+  public static function updateRuleMonitor($ruleMonitor, $limit, $scanCids) {
+    $dupmonRuleMonitorParams = [
+      'id' => $ruleMonitor['id'],
+      'scan_limit' => $limit,
     ];
+    $maxScanCid = (int)max($scanCids);
+    // Check to see if we've reached the end of all contacts of this type.
+    // (Remember, we're proceeding through all contacts, in order by contactId;
+    // so we want to know if there's even 1 undeleted contacts of this type
+    // with a greater contactId than the max contactId in our set of scanned contactIds.
+    $remainingContactCount = civicrm_api3('Contact', 'getcount', [
+      'id' => ['>' => $maxScanCid],
+      'contact_type' => $ruleMonitor['contact_type'],
+      'is_deleted' => 0,
+    ]);
+    if ($remainingContactCount) {
+      // We've found remaining unscanned contats. Therefore set this rule's
+      // min_cid to start immediately after this set of scanned cids.
+      $minCid = ($maxScanCid + 1);
+    }
+    else {
+      // We've found no remaining contacts, so we'll set this rule to start
+      // again with the smalled-ID contacts.
+      $minCid = 0;
+    }
+    $dupmonRuleMonitorParams['min_cid'] = $minCid;
+    civicrm_api3('dupmonRuleMonitor', 'create', $dupmonRuleMonitorParams);
   }
 
   /**
@@ -21,14 +58,14 @@ class CRM_Dupmon_Util {
    */
   public static function getScanContactList($contactType, $minCid = 0, $limit = 0) {
     if (!$limit) {
-      $limit = self::getNextLimitQuanta();
+      $limit = self::getNextLimitQuantum();
     }
     $queryParams = [
       1 => [$contactType, 'String'],
       2 => [$minCid, 'Int'],
       3 => [$limit, 'Int'],
     ];
-    $query = "SELECT id FROM civicrm_contact WHERE NOT is_deleted AND contact_type = %1 AND id > %2 LIMIT %3";
+    $query = "SELECT id FROM civicrm_contact WHERE NOT is_deleted AND contact_type = %1 AND id > %2 ORDER BY id LIMIT %3";
     $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
     $rows = $dao->fetchAll();
     $cids = CRM_Utils_Array::collect('id', $rows);
@@ -37,7 +74,6 @@ class CRM_Dupmon_Util {
   }
 
   public static function scanRule($rgid, $cids) {
-    echo "Scanning rule $rgid against ". count($cids) . " contacts\n";
     $dbMaxQueryTimeVariableProps = self::getDbMaxQueryTimeVariableProps();
 
     $variableDao = CRM_Core_DAO::executeQuery("SHOW VARIABLES LIKE '%{$dbMaxQueryTimeVariableProps['name']}%'");
@@ -80,7 +116,7 @@ class CRM_Dupmon_Util {
    * @param type $currentQuantum
    * @return Int
    */
-  public static function getNextLimitQuanta($currentQuantum = NULL) {
+  public static function getNextLimitQuantum($currentQuantum = NULL) {
     $quanta = self::getLimitQuanta();
     rsort($quanta);
     if ($currentQuantum) {
@@ -118,19 +154,9 @@ class CRM_Dupmon_Util {
     return $props;
   }
 
-  /**
-   * Update a given rule monitor with the given parameters.
-   * FIXME: STUB.
-   * @param type $rgid
-   * @param type $params
-   */
-  public static function updateRuleMonitor($rgid, $params) {
-
-  }
-
-  public static function createBatches($dupes, $scannedCids, $batchSize = NULL) {
+  public static function createBatches($dupes, $scannedCids, $ruleId, $batchSize = NULL) {
     if (is_null($batchSize)) {
-      $batchSize = self::getNextLimitQuanta();
+      $batchSize = self::getNextLimitQuantum();
     }
     $allDupeCids = array_unique(
       array_merge(
@@ -141,7 +167,7 @@ class CRM_Dupmon_Util {
     $rangeCids = array_intersect($allDupeCids, $scannedCids);
     $unbatchedCids = self::stripBatchedCids($rangeCids);
     if (empty($unbatchedCids)) {
-      // All in-range duplicate cids are already in another batch, so we have 
+      // All in-range duplicate cids are already in another batch, so we have
       // nothing to do.
       return;
     }
@@ -154,6 +180,10 @@ class CRM_Dupmon_Util {
       $groupId = $groupCreate['id'];
 
       // FIXME: TODO: create batchGroup entity with group id.
+      civicrm_api3('dupmonBatch', 'create', [
+        'group_id' => $groupId,
+        'rule_group_id' => $ruleId,
+      ]);
 
       foreach ($cidBatch as $cid) {
         civicrm_api3('groupContact', 'create', [
@@ -171,8 +201,22 @@ class CRM_Dupmon_Util {
    * @param type $cids
    */
   public static function stripBatchedCids($cids) {
-    // FIXME: TODO; STUB.
-    $usedCids = [207];
+    $usedCids = [];
+    $dupmonBatchGet = civicrm_api3('dupmonBatch', 'get', [
+      'options' => [
+        'limit' => 0,
+      ],
+    ]);
+    foreach ($dupmonBatchGet['values'] as $dupmonBatch) {
+      $groupContactGet = civicrm_api3('groupContact', 'get', [
+        'group_id' => $dupmonBatch['group_id'],
+        'options' => [
+          'limit' => 0,
+        ],
+      ]);
+      $groupContactIds = CRM_Utils_Array::collect('contact_id', $groupContactGet['values']);
+      $usedCids = array_merge($usedCids, $groupContactIds);
+    }
     return array_diff($cids, $usedCids);
   }
 }

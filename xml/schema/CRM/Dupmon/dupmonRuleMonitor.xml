@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Dupmon</base>
+  <class>DupmonRuleMonitor</class>
+  <name>civicrm_dupmon_rule_monitor</name>
+  <comment>Dedupe Monitor rule configurations</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique DupmonRuleMonitor ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>rule_group_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Dedupe Rule Group</comment>
+  </field>
+  <foreignKey>
+    <name>rule_group_id</name>
+    <table>civicrm_dedupe_rule_group</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+  
+  <field>
+    <name>scan_limit</name>
+    <type>int unsigned</type>
+    <comment>maximum number of contacts to scan with this rule ()</comment>
+  </field>
+  
+  <field>
+    <name>min_cid</name>
+    <type>int unsigned</type>
+    <default>0</default>
+    <comment>minimum contact ID to scan with this rule (1 + max cid from previous scan)</comment>
+  </field>
+
+</table>
