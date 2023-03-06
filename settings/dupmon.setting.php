@@ -14,7 +14,7 @@ return array(
     'title' => E::ts('Maximum Rule Scan Time'),
     'type' => 'Int',
     'quick_form_type' => 'Element',
-    'default' => 15,
+    'default' => 5,
   ),
   'dupmon_debug_log' => array(
     'group_name' => 'Dedupe Monitor Settings',
