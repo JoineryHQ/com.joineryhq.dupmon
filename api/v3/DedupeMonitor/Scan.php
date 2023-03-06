@@ -26,6 +26,32 @@ function _civicrm_api3_dedupe_monitor_Scan_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_dedupe_monitor_Scan($params) {
+  // Populate batches
+  $ruleMonitors = CRM_Dupmon_Util::getRuleMonitors();
+  foreach ($ruleMonitors as $ruleMonitor) {
+    $ruleCompleted = FALSE;
+    $limit = $ruleMonitor['limit'];
+    while (!$ruleCompleted) {
+      $cids = CRM_Dupmon_Util::getScanContactList($ruleMonitor['contact_type'], $ruleMonitor['minimum_cid'], $limit);
+      try {
+        $dupes = CRM_Dupmon_Util::scanRule($ruleMonitor['rule_id'], $cids);
+        $ruleCompleted = TRUE;
+      } catch (CRM_Dupmon_Exception $e) {
+        $limit = CRM_Dupmon_Util::getNextLimitQuanta(count($cids));
+      }
+    }
+    $ruleMonitorParams = [
+      'limit' => $limit,
+      'minimum_cid' => (max($cids) + 1),
+    ];
+    CRM_Dupmon_Util::updateRuleMonitor($rgid, $ruleMonitorParams);
+    
+    // If any dupes were found, process them into batches:
+    if (!empty($dupes)) {
+      CRM_Dupmon_Util::createBatches($dupes, $cids, $limit);
+    }
+  }
+  
   // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
   return civicrm_api3_create_success($returnValues, $params, 'DedupeMonitor', 'Scan');
 }
