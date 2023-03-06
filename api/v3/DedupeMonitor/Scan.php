@@ -37,7 +37,7 @@ function civicrm_api3_dedupe_monitor_Scan($params) {
         $dupes = CRM_Dupmon_Util::scanRule($ruleMonitor['rule_group_id'], $cids);
         $ruleCompleted = TRUE;
       } catch (CRM_Dupmon_Exception $e) {
-        $limit = CRM_Dupmon_Util::getNextLimitQuantum(count($cids));
+        $limit = CRM_Dupmon_Util::getNextLimitQuantum($limit);
       }
     }
     
