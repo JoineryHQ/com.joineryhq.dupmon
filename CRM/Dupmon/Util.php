@@ -74,24 +74,30 @@ class CRM_Dupmon_Util {
   }
 
   public static function scanRule($rgid, $cids) {
+    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Scanning with rule $rgid, contact_count = ". count($cids));
     $dbMaxQueryTimeVariableProps = self::getDbMaxQueryTimeVariableProps();
 
     $variableDao = CRM_Core_DAO::executeQuery("SHOW VARIABLES LIKE '%{$dbMaxQueryTimeVariableProps['name']}%'");
     $variableDao->fetch();
     $originalTimeLimit = $variableDao->Value;
+    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: \$originalTimeLimit: $originalTimeLimit");
     CRM_Core_DAO::executeQuery("SET SESSION {$dbMaxQueryTimeVariableProps['name']}={$dbMaxQueryTimeVariableProps['value']}");
+    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: query: SET SESSION {$dbMaxQueryTimeVariableProps['name']}={$dbMaxQueryTimeVariableProps['value']}");
     try {
       $dupes = CRM_Dedupe_Finder::dupes($rgid, $cids, FALSE);
     }
     catch (PEAR_Exception $e) {
       if ($e->getMessage() == "DB Error: unknown error") {
+        CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Timed out");
         throw new CRM_Dupmon_Exception('Dedupe scan exceeded the congigured max query time.', 'TIMEOUT');
       }
       else {
+        CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Other error: ". $e->getMessage());
         throw $e;
       }
     }
     CRM_Core_DAO::executeQuery("SET SESSION {$dbMaxQueryTimeVariableProps['name']}={$originalTimeLimit}");
+    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Found dupes: ". count($dupes));
     return $dupes;
   }
 
@@ -219,4 +225,15 @@ class CRM_Dupmon_Util {
     }
     return array_diff($cids, $usedCids);
   }
+  
+  public static function debugLog($message) {
+    if (!Civi::settings()->get('dupmon_debug_log')) {
+      return;
+    }
+    $file = CRM_Core_Config::singleton()->configAndLogDir . 'dupmon.log.txt';
+    $fp = fopen($file, 'a');
+    $timestamp = date('Y-m-d H:i:s');
+    fputs($fp, "$timestamp : $message\n");
+  }
+
 }
