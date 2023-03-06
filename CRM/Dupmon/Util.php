@@ -89,6 +89,7 @@ class CRM_Dupmon_Util {
     catch (PEAR_Exception $e) {
       if ($e->getMessage() == "DB Error: unknown error") {
         CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Timed out");
+        CRM_Core_DAO::executeQuery("SET SESSION {$dbMaxQueryTimeVariableProps['name']}={$originalTimeLimit}");
         throw new CRM_Dupmon_Exception('Dedupe scan exceeded the congigured max query time.', 'TIMEOUT');
       }
       else {
@@ -126,18 +127,15 @@ class CRM_Dupmon_Util {
     $quanta = self::getLimitQuanta();
     rsort($quanta);
     if ($currentQuantum) {
-      CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: currentQuanum = $currentQuantum");
       foreach ($quanta as $quantum) {
         if ($quantum < $currentQuantum) {
-          CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: found next: $quantum");
           return $quantum;
         }
-        // As a last resort, return limit of "0".
-        return 0;
       }
+      // As a last resort, return limit of "0".
+      return 0;
     }
     else {
-      CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: NOT found next, returning max.");
       return max($quanta);
     }
   }
