@@ -31,8 +31,10 @@ function civicrm_api3_dedupe_monitor_Scan($params) {
   foreach ($ruleMonitors as $ruleMonitor) {
     $ruleCompleted = FALSE;
     $limit = $ruleMonitor['scan_limit'];
+    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Starting with limit: $limit");
     if (!$limit) {
       $limit = CRM_Dupmon_Util::getNextLimitQuantum();
+      CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Limit was empty; got next limit: $limit");
     }
     while (!$ruleCompleted) {
       $cids = CRM_Dupmon_Util::getScanContactList($ruleMonitor['contact_type'], $ruleMonitor['min_cid'], $limit);
@@ -40,7 +42,9 @@ function civicrm_api3_dedupe_monitor_Scan($params) {
         $dupes = CRM_Dupmon_Util::scanRule($ruleMonitor['rule_group_id'], $cids);
         $ruleCompleted = TRUE;
       } catch (CRM_Dupmon_Exception $e) {
+        CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: trying to get next quantum for current limit = $limit");
         $limit = CRM_Dupmon_Util::getNextLimitQuantum($limit);
+        CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: got next quantum limit: $limit");
       }
     }
     
