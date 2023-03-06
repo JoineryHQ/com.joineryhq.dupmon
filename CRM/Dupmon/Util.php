@@ -177,13 +177,15 @@ class CRM_Dupmon_Util {
       // nothing to do.
       return;
     }
-    $cidBatches = array_chunk($rangeCids, $batchSize);
+    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: unbatched cids count: ". count($unbatchedCids));
+    $cidBatches = array_chunk($unbatchedCids, $batchSize);
     foreach ($cidBatches as $cidBatch) {
       $groupCreate = civicrm_api3('group', 'create', [
         'is_hidden' => TRUE,
         'title' => 'DedupeMonitorBatch '. uniqid(),
       ]);
       $groupId = $groupCreate['id'];
+      CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: creating batch (group_id: $groupId) with cids count: ". count($cidBatch));
 
       // FIXME: TODO: create batchGroup entity with group id.
       civicrm_api3('dupmonBatch', 'create', [
