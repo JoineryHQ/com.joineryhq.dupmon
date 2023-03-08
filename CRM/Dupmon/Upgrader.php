@@ -35,6 +35,7 @@ class CRM_Dupmon_Upgrader extends CRM_Dupmon_Upgrader_Base {
       $result = civicrm_api3('RuleGroup', 'get', [
         'sequential' => 1,
         'used' => ['!=' => "Supervised"],
+        'options' => ['limit' => 0],
         'api.DupmonRuleMonitor.create' => ['rule_group_id' => "\$value.id"],
       ]);
    }
@@ -45,7 +46,7 @@ class CRM_Dupmon_Upgrader extends CRM_Dupmon_Upgrader_Base {
    */
    public function uninstall(): void {
      // Delete all dupmonBatch Groups.
-     $this->executeSql("DELETE FROM civicrm_group WHERE name LIKE '%DedupeMonitorBatch_%' AND is_hidden");
+     $this->executeSql("DELETE FROM civicrm_group WHERE name LIKE 'DedupeMonitorBatch_%' AND is_hidden");
    }
 
   /**
