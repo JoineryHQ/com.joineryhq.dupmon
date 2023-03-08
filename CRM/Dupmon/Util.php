@@ -166,7 +166,7 @@ class CRM_Dupmon_Util {
       $batchSize = self::getNextLimitQuantum();
     }
     $allDupeCids = array_unique(
-      // TODO: this could be a place to optimize; in testing, larger arrays of $dupes, 
+      // TODO: this could be a place to optimize; in testing, larger arrays of $dupes,
       // merging all of this at once seems to create memory problems on some systems.
       array_merge(
         CRM_Utils_Array::collect(0, $dupes),
@@ -186,11 +186,12 @@ class CRM_Dupmon_Util {
       // FIXME: TODO: create batchGroup entity with group id.
       $dupmonBatchCreate = civicrm_api3('dupmonBatch', 'create', [
         'rule_group_id' => $ruleId,
+        'sequential' => 1,
       ]);
 
       foreach ($cidBatch as $cid) {
         civicrm_api3('groupContact', 'create', [
-          'group_id' => $dupmonBatchCreate['group_id'],
+          'group_id' => $dupmonBatchCreate['values'][0]['group_id'],
           'contact_id' => $cid,
         ]);
       }
@@ -222,7 +223,7 @@ class CRM_Dupmon_Util {
     }
     return array_diff($cids, $usedCids);
   }
-  
+
   public static function debugLog($message) {
     if (!Civi::settings()->get('dupmon_debug_log')) {
       return;
@@ -234,6 +235,41 @@ class CRM_Dupmon_Util {
   }
 
   public static function cleanupEmptyBatches() {
-    
+    // Find the groupContact count of all groups tied to dupmonBatches.
+    $dupmonBatchGet = civicrm_api3('DupmonBatch', 'get', [
+      'sequential' => 1,
+      'api.GroupContact.getcount' => ['group_id' => "\$value.group_id"],
+      'options' => ['limit' => 0],
+    ]);
+    foreach ($dupmonBatchGet['values'] as $dupmonBatch) {
+      // If the count is 0, delete the batch (this also deletes the Group).
+      $count = $dupmonBatch['api.GroupContact.getcount'];
+      if ($count == 0) {
+        civicrm_api3('dupmonBatch', 'delete', [
+          'id' => $dupmonBatch['id'],
+        ]);
+      }
+    }
+    // Find and delete any orphaned groups. E.g., if a rule_group is deleted,
+    // the FK cascade will delete any dupmonBatches using that rule; this will
+    // orphan any Group associated with that batch.
+    // These groups will have name like 'DedupeMonitorBatch_%' and are hidden.
+    // TODO: could probably handle this more cleanly with triggers.
+    $dao = CRM_Core_DAO::executeQuery("
+      SELECT g.id
+      FROM
+        civicrm_group g
+        LEFT JOIN civicrm_dupmon_batch b ON b.group_id = g.id
+      WHERE
+        g.name LIKE 'DedupeMonitorBatch_%'
+        AND g.is_hidden
+        AND b.group_id IS NULL
+    ");
+    while ($dao->fetch()) {
+      echo "About to delete group id = {$dao->id}\n";
+      civicrm_api3('group', 'delete', [
+        'id' => $dao->id,
+      ]);
+    }
   }
 }

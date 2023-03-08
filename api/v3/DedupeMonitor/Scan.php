@@ -55,6 +55,10 @@ function civicrm_api3_dedupe_monitor_Scan($params) {
       CRM_Dupmon_Util::createBatches($dupes, $cids, $ruleMonitor['rule_group_id'], $limit);
     }
   }
+
+  // Cleanup any empty batches that may be hanging around (e.g. if all of the
+  // batch contacts have been deleted by deduping or other means).
+  CRM_Dupmon_Util::cleanupEmptyBatches();
   
   // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
   return civicrm_api3_create_success($returnValues, $params, 'DedupeMonitor', 'Scan');
