@@ -166,6 +166,8 @@ class CRM_Dupmon_Util {
       $batchSize = self::getNextLimitQuantum();
     }
     $allDupeCids = array_unique(
+      // TODO: this could be a place to optimize; in testing, larger arrays of $dupes, 
+      // merging all of this at once seems to create memory problems on some systems.
       array_merge(
         CRM_Utils_Array::collect(0, $dupes),
         CRM_Utils_Array::collect(1, $dupes)
@@ -181,22 +183,14 @@ class CRM_Dupmon_Util {
     CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: unbatched cids count: ". count($unbatchedCids));
     $cidBatches = array_chunk($unbatchedCids, $batchSize);
     foreach ($cidBatches as $cidBatch) {
-      $groupCreate = civicrm_api3('group', 'create', [
-        'is_hidden' => TRUE,
-        'title' => 'DedupeMonitorBatch '. uniqid(),
-      ]);
-      $groupId = $groupCreate['id'];
-      CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: creating batch (group_id: $groupId) with cids count: ". count($cidBatch));
-
       // FIXME: TODO: create batchGroup entity with group id.
-      civicrm_api3('dupmonBatch', 'create', [
-        'group_id' => $groupId,
+      $dupmonBatchCreate = civicrm_api3('dupmonBatch', 'create', [
         'rule_group_id' => $ruleId,
       ]);
 
       foreach ($cidBatch as $cid) {
         civicrm_api3('groupContact', 'create', [
-          'group_id' => $groupId,
+          'group_id' => $dupmonBatchCreate['group_id'],
           'contact_id' => $cid,
         ]);
       }
@@ -239,4 +233,7 @@ class CRM_Dupmon_Util {
     fputs($fp, "$timestamp : $message\n");
   }
 
+  public static function cleanupEmptyBatches() {
+    
+  }
 }

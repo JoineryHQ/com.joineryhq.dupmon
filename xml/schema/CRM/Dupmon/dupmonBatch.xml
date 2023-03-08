@@ -24,8 +24,9 @@
 
   <field>
     <name>group_id</name>
+    <required>true</required>
     <type>int unsigned</type>
-    <comment>FK to Group</comment>
+    <comment>FK to Group (required in sql but not in api)</comment>
   </field>
   <foreignKey>
     <name>group_id</name>
@@ -37,6 +38,7 @@
   <field>
     <name>rule_group_id</name>
     <type>int unsigned</type>
+    <required>true</required>
     <comment>FK to Dedupe Rule Group</comment>
   </field>
   <foreignKey>

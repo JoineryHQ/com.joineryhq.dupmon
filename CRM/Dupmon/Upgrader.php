@@ -39,13 +39,13 @@ class CRM_Dupmon_Upgrader extends CRM_Dupmon_Upgrader_Base {
   // }
 
   /**
-   * Example: Run an external SQL script when the module is uninstalled.
-   *
+   * Uninstall actions.
    * Note that if a file is present sql\auto_uninstall that will run regardless of this hook.
    */
-  // public function uninstall(): void {
-  //   $this->executeSqlFile('sql/my_uninstall.sql');
-  // }
+   public function uninstall(): void {
+     // Delete all dupmonBatch Groups.
+     $this->executeSql("DELETE FROM civicrm_group WHERE name LIKE '%DedupeMonitorBatch_%' AND is_hidden");
+   }
 
   /**
    * Example: Run a simple query when a module is enabled.
