@@ -38,6 +38,23 @@ class CRM_Dupmon_Upgrader extends CRM_Dupmon_Upgrader_Base {
         'options' => ['limit' => 0],
         'api.DupmonRuleMonitor.create' => ['rule_group_id' => "\$value.id"],
       ]);
+      // Create a dashlet for scan alerts
+      $sql = "SELECT count(*) FROM civicrm_dashboard WHERE name='dupmonAlert'";
+      $res = CRM_Core_DAO::singleValueQuery($sql);
+      if ($res <= 0) {
+        $sqlParams = [
+          '1' => [CRM_Core_Config::domainID(), 'String'],
+        ];
+        $sql = "  
+          INSERT INTO `civicrm_dashboard` (
+            `domain_id`, `name`, `label`, `url`, `permission`, `permission_operator`, `fullscreen_url`, `is_active`, `is_reserved`, `cache_minutes`, `directive`
+          )
+          VALUES (
+            %1, 'dupmonAlert', 'Dedupe Monitor Alert', 'civicrm/dupmon/alert?reset=1', 'merge duplicate contacts', NULL, 'civicrm/dupmon/alert?reset=1&context=dashletFullscreen', '1', '1', '60', NULL
+          )
+        ";
+        CRM_Core_DAO::executeQuery($sql, $sqlParams);
+      }
    }
 
   /**
@@ -47,6 +64,15 @@ class CRM_Dupmon_Upgrader extends CRM_Dupmon_Upgrader_Base {
    public function uninstall(): void {
      // Delete all dupmonBatch Groups.
      $this->executeSql("DELETE FROM civicrm_group WHERE name LIKE 'DedupeMonitorBatch_%' AND is_hidden");
+     // Delete dupmonAlert dashlet
+     $dashboardGet = civicrm_api3('dashboard', 'get', [
+       'name' => 'dupmonAlert',
+     ]);
+     foreach ($dashboardGet['values'] as $dashboard) {
+     $dashboardGet = civicrm_api3('dashboard', 'delete', [
+       'id' => $dashboard['id'],
+     ]);       
+     }
    }
 
   /**
