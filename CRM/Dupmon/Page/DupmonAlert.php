@@ -23,7 +23,7 @@ class CRM_Dupmon_Page_DupmonAlert extends CRM_Core_Page {
         '1' => $batchCount,
         '2' => $totalBatchSize,
       ]);
-      $url = CRM_Utils_System::url('civicrm/dupmon/batches', 'reset=1', FALSE, NULL, FALSE, FALSE, TRUE);
+      $url = CRM_Utils_System::url('civicrm/admin/dupmon/batches', 'reset=1', FALSE, NULL, FALSE, FALSE, TRUE);
       $this->assign('reviewUrl', $url);
       $this->assign('alert', $alert);
     }

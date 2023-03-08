@@ -5,7 +5,7 @@
           {$alert}
         </p>
           {crmButton href="$reviewUrl" class="edit" title="Review" icon=fa-rocket}{ts}Review Duplicate Monitor Batches{/ts}{/crmButton}
-<div class="clear"></div>
+          <div class="clear"></div>
       </div>
     {else}
       <div class="help">
