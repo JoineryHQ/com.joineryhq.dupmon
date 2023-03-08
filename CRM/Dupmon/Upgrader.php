@@ -28,15 +28,16 @@ class CRM_Dupmon_Upgrader extends CRM_Dupmon_Upgrader_Base {
    * created during the installation (e.g., a setting or a managed entity), do
    * so here to avoid order of operation problems.
    */
-  // public function postInstall(): void {
-  //  $customFieldId = civicrm_api3('CustomField', 'getvalue', array(
-  //    'return' => array("id"),
-  //    'name' => "customFieldCreatedViaManagedHook",
-  //  ));
-  //  civicrm_api3('Setting', 'create', array(
-  //    'myWeirdFieldSetting' => array('id' => $customFieldId, 'weirdness' => 1),
-  //  ));
-  // }
+   public function postInstall(): void {
+      // Create ruleMonitors for all non-supervised dedupe rules (supervised
+      // rules are likely to generate many false-positives, so we don't
+      // monitor them by default.
+      $result = civicrm_api3('RuleGroup', 'get', [
+        'sequential' => 1,
+        'used' => ['!=' => "Supervised"],
+        'api.DupmonRuleMonitor.create' => ['rule_group_id' => "\$value.id"],
+      ]);
+   }
 
   /**
    * Uninstall actions.
