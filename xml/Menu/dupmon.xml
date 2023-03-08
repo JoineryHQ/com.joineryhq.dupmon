@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/dupmon/alert</path>
+    <page_callback>CRM_Dupmon_Page_DupmonAlert</page_callback>
+    <title>DupmonAlert</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>

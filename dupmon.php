@@ -4,7 +4,7 @@ require_once 'dupmon.civix.php';
 // phpcs:disable
 use CRM_Dupmon_ExtensionUtil as E;
 // phpcs:enable
-
+  
 /**
  * Implements hook_civicrm_config().
  *
