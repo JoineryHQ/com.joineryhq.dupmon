@@ -272,4 +272,12 @@ class CRM_Dupmon_Util {
       ]);
     }
   }
+  
+  static function getRuleHash($ruleId) {
+    $rule = civicrm_api3('ruleGroup', 'getSingle', [
+      'id' => $ruleId,
+      'api.rule.get' => ['rule_group_id' => '$value.id']
+    ]);
+    return hash('sha256', serialize($rule));
+  }
 }

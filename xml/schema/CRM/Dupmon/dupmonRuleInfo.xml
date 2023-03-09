@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Dupmon</base>
+  <class>DupmonRuleInfo</class>
+  <name>civicrm_dupmon_rule_info</name>
+  <comment>Relevant info for dedupe rule groups</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique DupmonRuleInfo ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>rule_group_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to Dedupe Rule Group</comment>
+  </field>
+  <foreignKey>
+    <name>rule_group_id</name>
+    <table>civicrm_dedupe_rule_group</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>hash</name>
+    <type>varchar</type>
+    <length>64</length>
+    <required>true</required>
+    <comment>hash of rule configuration</comment>
+  </field>
+
+</table>

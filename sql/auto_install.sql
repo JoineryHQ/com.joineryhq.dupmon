@@ -18,6 +18,7 @@
 SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `civicrm_dupmon_rule_monitor`;
+DROP TABLE IF EXISTS `civicrm_dupmon_rule_info`;
 DROP TABLE IF EXISTS `civicrm_dupmon_batch`;
 
 SET FOREIGN_KEY_CHECKS=1;
@@ -42,6 +43,22 @@ CREATE TABLE `civicrm_dupmon_batch` (
   PRIMARY KEY (`id`),
   CONSTRAINT FK_civicrm_dupmon_batch_group_id FOREIGN KEY (`group_id`) REFERENCES `civicrm_group`(`id`) ON DELETE CASCADE,
   CONSTRAINT FK_civicrm_dupmon_batch_rule_group_id FOREIGN KEY (`rule_group_id`) REFERENCES `civicrm_dedupe_rule_group`(`id`) ON DELETE CASCADE
+)
+ENGINE=InnoDB;
+
+-- /*******************************************************
+-- *
+-- * civicrm_dupmon_rule_info
+-- *
+-- * Relevant info for dedupe rule groups
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_dupmon_rule_info` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique DupmonRuleInfo ID',
+  `rule_group_id` int unsigned NOT NULL COMMENT 'FK to Dedupe Rule Group',
+  `hash` varchar(64) NOT NULL COMMENT 'hash of rule configuration',
+  PRIMARY KEY (`id`),
+  CONSTRAINT FK_civicrm_dupmon_rule_info_rule_group_id FOREIGN KEY (`rule_group_id`) REFERENCES `civicrm_dedupe_rule_group`(`id`) ON DELETE CASCADE
 )
 ENGINE=InnoDB;
 

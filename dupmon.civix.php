@@ -310,6 +310,11 @@ function _dupmon_civix_civicrm_entityTypes(&$entityTypes) {
       'class' => 'CRM_Dupmon_DAO_DupmonBatch',
       'table' => 'civicrm_dupmon_batch',
     ],
+    'CRM_Dupmon_DAO_DupmonRuleInfo' => [
+      'name' => 'DupmonRuleInfo',
+      'class' => 'CRM_Dupmon_DAO_DupmonRuleInfo',
+      'table' => 'civicrm_dupmon_rule_info',
+    ],
     'CRM_Dupmon_DAO_DupmonRuleMonitor' => [
       'name' => 'DupmonRuleMonitor',
       'class' => 'CRM_Dupmon_DAO_DupmonRuleMonitor',

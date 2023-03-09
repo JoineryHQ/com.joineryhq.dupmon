@@ -16,6 +16,7 @@
 SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `civicrm_dupmon_rule_monitor`;
+DROP TABLE IF EXISTS `civicrm_dupmon_rule_info`;
 DROP TABLE IF EXISTS `civicrm_dupmon_batch`;
 
 SET FOREIGN_KEY_CHECKS=1;
