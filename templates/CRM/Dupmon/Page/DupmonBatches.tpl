@@ -17,6 +17,7 @@
           <thead class="sticky">
             <th>{ts}ID{/ts}</th>
             <th>{ts}Rule{/ts}</th>
+            <th>{ts}Contact type{/ts}</th>
             <th>{ts}Scanned{/ts}</th>
             <th>{ts}Scanned contacts{/ts}</th>
             <th></th>
@@ -25,6 +26,7 @@
         <tr id="dupmonBatch-{$row.id}" class="crm-entity {cycle values="odd-row,even-row"}">
           <td>{$row.id}</td>
           <td>{$row.rule_title}</td>
+          <td>{$row.rule_contact_type}</td>
           <td>{$row.created|crmDate:"shortdate"} {$row.created|crmDate:"Time"}</td>
           <td>{$row.size}</td>
           <td>

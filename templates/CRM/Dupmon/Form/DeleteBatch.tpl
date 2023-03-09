@@ -8,6 +8,7 @@
   <table cellpadding="0" cellspacing="0" border="0" class="row-highlight">
     <tr><th>{ts}ID{/ts}</th><td>{$dupmonBatch.id}</td></tr>
     <tr><th>{ts}Rule{/ts}</th><td>{$dupmonBatch.rule_title}</td></tr>
+    <tr><th>{ts}Contact type{/ts}</th><td>{$dupmonBatch.rule_contact_type}</td></tr>
     <tr><th>{ts}Scanned{/ts}</th><td>{$dupmonBatch.created|crmDate:"shortdate"} {$dupmonBatch.created|crmDate:"Time"}</td></tr>
    </table>
 

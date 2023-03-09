@@ -11,13 +11,14 @@ class CRM_Dupmon_Page_DupmonBatches extends CRM_Core_Page {
     $dupmonBatchGet = civicrm_api3('DupmonBatch', 'get', [
       'sequential' => 1,
       'api.GroupContact.getcount' => ['group_id' => "\$value.group_id"],
-      'api.RuleGroup.getValue' => ['id' => "\$value.rule_group_id", 'return' => 'title'],
+      'api.RuleGroup.get' => ['id' => "\$value.rule_group_id", 'return' => ['title', 'contact_type']],
       'options' => ['limit' => 0],
     ]);
     if ($dupmonBatchGet['count']) {
       foreach ($dupmonBatchGet['values'] as $dupmonBatch) {
         $dupmonBatch['size'] = $dupmonBatch['api.GroupContact.getcount'];
-        $dupmonBatch['rule_title'] = $dupmonBatch['api.RuleGroup.getValue'];
+        $dupmonBatch['rule_title'] = $dupmonBatch['api.RuleGroup.get']['values'][0]['title'];
+        $dupmonBatch['rule_contact_type'] = $dupmonBatch['api.RuleGroup.get']['values'][0]['contact_type'];
         $rows[] = $dupmonBatch;
       }
       $this->assign('rows', $rows);
