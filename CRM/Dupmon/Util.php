@@ -272,12 +272,64 @@ class CRM_Dupmon_Util {
       ]);
     }
   }
-  
-  static function getRuleHash($ruleId) {
-    $rule = civicrm_api3('ruleGroup', 'getSingle', [
-      'id' => $ruleId,
-      'api.rule.get' => ['rule_group_id' => '$value.id']
+
+  static function getRuleHash($ruleGroupId) {
+    $ruleGroup = civicrm_api3('ruleGroup', 'getSingle', [
+      'id' => $ruleGroupId,
+      'api.rule.get' => ['dedupe_rule_group_id' => '$value.id']
     ]);
-    return hash('sha256', serialize($rule));
+    foreach ($ruleGroup['api.rule.get']['values'] as &$rule) {
+      // Strip IDs. These are changed with every ruleGroup save, but they are
+      // not meaningful in the application of the rule, so we don't want them
+      // polluting the hash.
+      unset($rule['id']);
+    }
+    return hash('sha256', serialize($ruleGroup));
+  }
+
+  static function updateRuleHash($ruleGroupId, $force = FALSE) {
+    $newHash = CRM_Dupmon_Util::getRuleHash($ruleGroupId);
+    $ruleInfo = civicrm_api3('dupmonRuleInfo', 'get', [
+      'sequential' => 1,
+      'rule_group_id' => $ruleGroupId,
+    ]);
+    if ($ruleInfo['count']) {
+      $ruleInfoId = $ruleInfo['values'][0]['id'];
+      $oldHash = $ruleInfo['values'][0]['hash'];
+    }
+    if (
+      $force
+      || ($oldHash != $newHash)
+    ) {
+      // Hash has changed. Update the stored hash.
+      $ruleInfoCreate = civicrm_api3('dupmonRuleInfo', 'create', [
+        'id' => $ruleInfoId,
+        'hash' => $newHash,
+        'rule_group_id' => $ruleGroupId,
+      ]);
+
+      // Delete any batches for this rule.
+      $batchGet = civicrm_api3('dupmonBatch', 'get', [
+        'rule_group_id' => $ruleGroupId,
+        'options' => [
+          'limit' => 0,
+        ],
+        'api.dupmonBatch.delete' => [],
+      ]);
+
+      // Nullify scan_limit for any monitors on this rule (because the rule
+      // criteria may have changed, we might be able to run with a greater scan_limit
+      // on next run.
+      $ruleMonitorGet = civicrm_api3('dupmonRuleMonitor', 'get', [
+        'rule_group_id' => $ruleGroupId,
+
+      ]);
+      foreach ($ruleMonitorGet['values'] as $ruleMonitor) {
+        civicrm_api3('dupmonRuleMonitor', 'create', [
+          'id' => $ruleMonitor['id'],
+          'scan_limit' => 'null',
+        ]);
+      }
+    }
   }
 }

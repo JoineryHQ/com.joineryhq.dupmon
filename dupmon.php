@@ -4,7 +4,14 @@ require_once 'dupmon.civix.php';
 // phpcs:disable
 use CRM_Dupmon_ExtensionUtil as E;
 // phpcs:enable
-  
+
+function dupmon_civicrm_postProcess($formName, $form) {
+  if ($formName == 'CRM_Contact_Form_DedupeRules') {
+    $ruleGroupId = $form->getVar('_rgid');
+    CRM_Dupmon_Util::updateRuleHash($ruleGroupId);
+  }
+}
+
 /**
  * Implements hook_civicrm_config().
  *
