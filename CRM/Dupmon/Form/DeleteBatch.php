@@ -8,14 +8,16 @@ use CRM_Dupmon_ExtensionUtil as E;
  * @see https://docs.civicrm.org/dev/en/latest/framework/quickform/
  */
 class CRM_Dupmon_Form_DeleteBatch extends CRM_Core_Form {
+  protected $_batchId;
+
   public function preProcess() {
     // Set context (for redirection on cancel)
     $url = CRM_Utils_System::url('civicrm/admin/dupmon/batches', 'reset=1');
     $session = CRM_Core_Session::singleton();
-    $session->replaceUserContext($url);    
+    $session->replaceUserContext($url);
   }
-  
-  public function buildQuickForm() {   
+
+  public function buildQuickForm() {
     $this->addButtons(array(
       array(
         'type' => 'submit',
@@ -29,11 +31,10 @@ class CRM_Dupmon_Form_DeleteBatch extends CRM_Core_Form {
     ));
 
     // Get batch info for user information.
-    $batchId = CRM_Utils_Request::retrieve('id', 'Int', $this, TRUE);
-    $this->addElement('hidden', 'batch_id', $batchId); 
-  
+    $this->_batchId = CRM_Utils_Request::retrieve('id', 'Int', $this, TRUE);
+
     $dupmonBatch = civicrm_api3('DupmonBatch', 'getSingle', [
-      'id' => $batchId,
+      'id' => $this->_batchId,
       'api.RuleGroup.getValue' => ['id' => "\$value.rule_group_id", 'return' => 'title'],
     ]);
     $dupmonBatch['rule_title'] = $dupmonBatch['api.RuleGroup.getValue'];
@@ -42,19 +43,18 @@ class CRM_Dupmon_Form_DeleteBatch extends CRM_Core_Form {
   }
 
   public function postProcess() {
-    $values = $this->exportValues();
     civicrm_api3('dupmonBatch', 'delete', [
-      'id' => $values['batch_id'],
+      'id' => $this->_batchId,
     ]);
     $statusMessage = E::ts('Batch %1 has been forgotten. No contact data was changed.', [
-      '1' => $values['batch_id'],
+      '1' => $this->_batchId,
     ]);
     CRM_Core_Session::setStatus($statusMessage, E::ts('Batch forgotten'), 'success');
-    
+
     $session = CRM_Core_Session::singleton();
     $redirect = $session->popUserContext();
     CRM_Utils_System::redirect($redirect);
-    
+
     parent::postProcess();
   }
 
