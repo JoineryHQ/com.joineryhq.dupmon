@@ -29,7 +29,7 @@
           <td>{$row.size}</td>
           <td>
             <a class="crm-hover-button action-item" href="{crmURL p="civicrm/contact/dedupefind" q="reset=1&action=update&rgid=`$row.rule_group_id`&gid=`$row.group_id`"}">Dedupe</a>
-            <a class="crm-hover-button action-item" href="{crmURL p="civicrm/contact/dedupefind" q="reset=1&action=update&rgid=`$row.rule_group_id`&gid=`$row.group_id`"}">Forget batch</a>
+            <a class="crm-hover-button action-item" href="{crmURL p="civicrm/admin/dupmon/deletebatch" q="reset=1&id=`$row.id`"}">Forget batch</a>
           </td>
         </tr>
         {/foreach}

@@ -36,7 +36,7 @@ class CRM_Dupmon_BAO_DupmonBatch extends CRM_Dupmon_DAO_DupmonBatch {
     return $instance;
   }
 
-  public function del($id) {
+  public static function del($id) {
     // Instead of deleting the dupmonBatch, delete its associated Group; FK cascade
     // will delete the dupmonBatch, and the group itself has no value without
     // the dupmonBatch.
