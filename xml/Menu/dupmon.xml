@@ -18,4 +18,10 @@
     <title>Dedupe Monitor: Forget Batch</title>
     <access_arguments>merge duplicate contacts</access_arguments>
   </item>
+  <item>
+    <path>civicrm/admin/dupmon/settings</path>
+    <page_callback>CRM_Dupmon_Form_Settings</page_callback>
+    <title>Dedupe Monitor: Settings</title>
+    <access_arguments>merge duplicate contacts</access_arguments>
+  </item>
 </menu>
