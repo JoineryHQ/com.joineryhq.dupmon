@@ -162,7 +162,18 @@ class CRM_Dupmon_Util {
     return $props;
   }
 
+  /**
+   * For a given collection of duplicate candidates, batch them into reviewable dupmonBatch entities.
+   *
+   * @param Array $dupes
+   * @param Array $scannedCids
+   * @param Int $ruleId
+   * @param Int $batchSize
+   * @return Int Count of batches created
+   */
   public static function createBatches($dupes, $scannedCids, $ruleId, $batchSize = NULL) {
+    $batchesCreatedCount = 0;
+
     if (is_null($batchSize)) {
       $batchSize = self::getNextLimitQuantum();
     }
@@ -179,12 +190,12 @@ class CRM_Dupmon_Util {
     if (empty($unbatchedCids)) {
       // All in-range duplicate cids are already in another batch, so we have
       // nothing to do.
-      return;
+      return $batchesCreatedCount;
     }
     CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: unbatched cids count: " . count($unbatchedCids));
     $cidBatches = array_chunk($unbatchedCids, $batchSize);
+
     foreach ($cidBatches as $cidBatch) {
-      // FIXME: TODO: create batchGroup entity with group id.
       $dupmonBatchCreate = civicrm_api3('dupmonBatch', 'create', [
         'rule_group_id' => $ruleId,
         'sequential' => 1,
@@ -196,7 +207,9 @@ class CRM_Dupmon_Util {
           'contact_id' => $cid,
         ]);
       }
+      $batchesCreatedCount++;
     }
+    return $batchesCreatedCount;
   }
 
   /**
@@ -235,6 +248,11 @@ class CRM_Dupmon_Util {
     fwrite($fp, "$timestamp : $message\n");
   }
 
+  /**
+   * Remove any batches that no longer have group members.
+   *
+   * @return int Number of batches removed.
+   */
   public static function cleanupEmptyBatches() {
     // Find the groupContact count of all groups tied to dupmonBatches.
     $dupmonBatchGet = civicrm_api3('DupmonBatch', 'get', [
@@ -266,12 +284,15 @@ class CRM_Dupmon_Util {
         AND g.is_hidden
         AND b.group_id IS NULL
     ");
+    $cleanedCount = 0;
     while ($dao->fetch()) {
-      echo "About to delete group id = {$dao->id}\n";
+      CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: About to delete group id = {$dao->id}");
       civicrm_api3('group', 'delete', [
         'id' => $dao->id,
       ]);
+      $cleanedCount++;
     }
+    return $cleanedCount;
   }
 
   public static function getRuleHash($ruleGroupId) {
