@@ -9,7 +9,7 @@
   <item>
     <path>civicrm/admin/dupmon/batches</path>
     <page_callback>CRM_Dupmon_Page_DupmonBatches</page_callback>
-    <title>Dedupe Monitor Batches</title>
+    <title>Dedupe Monitor: Scanned Batches</title>
     <access_arguments>merge duplicate contacts</access_arguments>
   </item>
   <item>

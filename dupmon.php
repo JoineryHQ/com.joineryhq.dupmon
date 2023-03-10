@@ -100,16 +100,67 @@ function dupmon_civicrm_entityTypes(&$entityTypes): void {
 /**
  * Implements hook_civicrm_navigationMenu().
  *
- * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
  */
-//function dupmon_civicrm_navigationMenu(&$menu): void {
-//  _dupmon_civix_insert_navigation_menu($menu, 'Mailings', [
-//    'label' => E::ts('New subliminal message'),
-//    'name' => 'mailing_subliminal_message',
-//    'url' => 'civicrm/mailing/subliminal',
-//    'permission' => 'access CiviMail',
-//    'operator' => 'OR',
-//    'separator' => 0,
-//  ]);
-//  _dupmon_civix_navigationMenu($menu);
-//}
+function dupmon_civicrm_navigationMenu(&$menu) {
+//  _dupmon_get_max_navID($menu, $max_navID);
+
+  $items = [];
+  $items[] = [
+    'parent' => 'Contacts/Find and Merge Duplicate Contacts',
+    'properties' => [
+      'label' => E::ts('Dedupe Monitor'),
+      'name' => 'Dedupe Monitor',
+      'url' => NULL,
+      'permission' => 'merge duplicate contacts',
+      'operator' => 'AND',
+      'separator' => NULL,
+    ]
+  ];
+  $items[] = [
+    'parent' => 'Contacts/Find and Merge Duplicate Contacts/Dedupe Monitor',
+    'properties' => [
+      'label' => E::ts('Scanned Batches'),
+      'name' => 'Scanned Batches',
+      'url' => CRM_Utils_System::url('civicrm/admin/dupmon/batches', 'reset=1', TRUE),
+      'permission' => 'merge duplicate contacts',
+      'operator' => 'AND',
+      'separator' => NULL,
+      'icon' => 'crm-i fa-rocket',
+    ]
+  ];
+  $items[] = [
+    'parent' => 'Contacts/Find and Merge Duplicate Contacts/Dedupe Monitor',
+    'properties' => [
+      'label' => E::ts('Settings'),
+      'name' => 'Settings',
+      'url' => CRM_Utils_System::url('civicrm/admin/dupmon/settings', 'reset=1', TRUE),
+      'permission' => 'merge duplicate contacts',
+      'operator' => 'AND',
+      'separator' => NULL,
+      'icon' => 'crm-i fa-gear',
+    ]
+  ];
+  foreach ($items as $item) {
+//    $item['properties']['navID'] = ++$max_navID;
+    _dupmon_civix_insert_navigation_menu($menu, $item['parent'], $item['properties']);
+  }
+  _dupmon_civix_navigationMenu($menu);
+}
+
+/**
+ * For an array of menu items, recursively get the value of the greatest navID
+ * attribute.
+ * @param <type> $menu
+ * @param <type> $max_navID
+ */
+function _dupmon_get_max_navID(&$menu, &$max_navID = NULL) {
+  foreach ($menu as $id => $item) {
+    if (!empty($item['attributes']['navID'])) {
+      $max_navID = max($max_navID, $item['attributes']['navID']);
+    }
+    if (!empty($item['child'])) {
+      _dupmon_get_max_navID($item['child'], $max_navID);
+    }
+  }
+}
