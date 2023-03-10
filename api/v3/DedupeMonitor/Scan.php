@@ -29,6 +29,7 @@ function civicrm_api3_dedupe_monitor_Scan($params) {
   // Populate batches
   $ruleMonitors = CRM_Dupmon_Util::getRuleMonitors();
   $ruleMonitorsProcessed = [];
+  $batchesCreatedCount = 0;
   foreach ($ruleMonitors as $ruleMonitor) {
     $ruleCompleted = FALSE;
     $limit = $ruleMonitor['scan_limit'];
@@ -53,9 +54,8 @@ function civicrm_api3_dedupe_monitor_Scan($params) {
     CRM_Dupmon_Util::updateRuleMonitor($ruleMonitor, $limit, $cids);
 
     // If any dupes were found, process them into batches:
-    $batchesCreatedCount = 0;
     if (!empty($dupes)) {
-      $batchesCreatedCount = CRM_Dupmon_Util::createBatches($dupes, $cids, $ruleMonitor['rule_group_id'], $limit);
+      $batchesCreatedCount += CRM_Dupmon_Util::createBatches($dupes, $cids, $ruleMonitor['rule_group_id'], $limit);
     }
     $ruleMonitorsProcessed[] = [$ruleMonitor['id'] => count($dupes) . " dupes"];
   }
