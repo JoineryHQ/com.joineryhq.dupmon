@@ -22,7 +22,7 @@
         </tr>
         {foreach from=$ruleGroups item=ruleGroup}
           {capture assign=checkboxFieldName}enable-monitor-rule-group-{$ruleGroup.id}{/capture}
-          <tr>
+          <tr id="dupmon-monitor-rule-group-{$ruleGroup.id}" class="{cycle values="odd-row,even-row"}">
             <td>{$form.$checkboxFieldName.html}</td>
             <td>{$ruleGroups[$ruleGroup.id].contact_type}</td>
             <td>{$ruleGroups[$ruleGroup.id].used}</td>

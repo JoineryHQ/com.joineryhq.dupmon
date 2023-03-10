@@ -27,7 +27,7 @@
                 <td>{$row.id}</td>
                 <td>{$row.rule_title}</td>
                 <td>{$row.rule_contact_type}</td>
-                <td>{$row.created|crmDate:"shortdate"} {$row.created|crmDate:"Time"}</td>
+                <td>{$row.created|crmDate:"shortdate"} {$row.created|crmDate:"%I:%M:%S %P"}</td>
                 <td>{$row.size}</td>
                 <td>
                   <a class="crm-hover-button action-item" href="{crmURL p="civicrm/contact/dedupefind" q="reset=1&action=update&rgid=`$row.rule_group_id`&gid=`$row.group_id`"}">Dedupe</a>
