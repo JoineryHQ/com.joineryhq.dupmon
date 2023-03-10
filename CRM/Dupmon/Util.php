@@ -75,31 +75,31 @@ class CRM_Dupmon_Util {
   }
 
   public static function scanRule($rgid, $cids) {
-    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Scanning with rule $rgid, contact_count = " . count($cids));
+    CRM_Dupmon_Util::debugLog("Scanning with rule $rgid, contact_count = " . count($cids), __FUNCTION__);
     $dbMaxQueryTimeVariableProps = self::getDbMaxQueryTimeVariableProps();
 
     $variableDao = CRM_Core_DAO::executeQuery("SHOW VARIABLES LIKE '%{$dbMaxQueryTimeVariableProps['name']}%'");
     $variableDao->fetch();
     $originalTimeLimit = $variableDao->Value;
-    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: \$originalTimeLimit: $originalTimeLimit");
+    CRM_Dupmon_Util::debugLog("\$originalTimeLimit: $originalTimeLimit", __FUNCTION__);
     CRM_Core_DAO::executeQuery("SET SESSION {$dbMaxQueryTimeVariableProps['name']}={$dbMaxQueryTimeVariableProps['value']}");
-    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: query: SET SESSION {$dbMaxQueryTimeVariableProps['name']}={$dbMaxQueryTimeVariableProps['value']}");
+    CRM_Dupmon_Util::debugLog("query: SET SESSION {$dbMaxQueryTimeVariableProps['name']}={$dbMaxQueryTimeVariableProps['value']}", __FUNCTION__);
     try {
       $dupes = CRM_Dedupe_Finder::dupes($rgid, $cids, FALSE);
     }
     catch (PEAR_Exception $e) {
       if ($e->getMessage() == "DB Error: unknown error") {
-        CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Timed out");
+        CRM_Dupmon_Util::debugLog("Timed out", __FUNCTION__);
         CRM_Core_DAO::executeQuery("SET SESSION {$dbMaxQueryTimeVariableProps['name']}={$originalTimeLimit}");
         throw new CRM_Dupmon_Exception('Dedupe scan exceeded the congigured max query time.', 'TIMEOUT');
       }
       else {
-        CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Other error: " . $e->getMessage());
+        CRM_Dupmon_Util::debugLog("Other error: " . $e->getMessage(), __FUNCTION__);
         throw $e;
       }
     }
     CRM_Core_DAO::executeQuery("SET SESSION {$dbMaxQueryTimeVariableProps['name']}={$originalTimeLimit}");
-    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Found dupes: " . count($dupes));
+    CRM_Dupmon_Util::debugLog("Found dupes: " . count($dupes), __FUNCTION__);
     return $dupes;
   }
 
@@ -183,7 +183,7 @@ class CRM_Dupmon_Util {
       $batchSize,
       $maxBatchSize,
     ]);
-    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: batch size is $batchSize (smaller of $batchSize, $maxBatchSize)");
+    CRM_Dupmon_Util::debugLog("batch size is $batchSize (smaller of $batchSize, $maxBatchSize)", __FUNCTION__);
 
     $allDupeCids = array_unique(
       // TODO: this could be a place to optimize; in testing, larger arrays of $dupes,
@@ -200,7 +200,7 @@ class CRM_Dupmon_Util {
       // nothing to do.
       return $batchesCreatedCount;
     }
-    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: unbatched cids count: " . count($unbatchedCids));
+    CRM_Dupmon_Util::debugLog("unbatched cids count: " . count($unbatchedCids), __FUNCTION__);
     $cidBatches = array_chunk($unbatchedCids, $batchSize);
 
     foreach ($cidBatches as $cidBatch) {
@@ -246,13 +246,16 @@ class CRM_Dupmon_Util {
     return array_diff($cids, $usedCids);
   }
 
-  public static function debugLog($message) {
+  public static function debugLog($message, $prefix = NULL) {
     if (!Civi::settings()->get('dupmon_debug_log')) {
       return;
     }
     $file = CRM_Core_Config::singleton()->configAndLogDir . 'dupmon.log.txt';
     $fp = fopen($file, 'a');
     $timestamp = date('Y-m-d H:i:s');
+    if ($prefix) {
+      $message = "{$prefix} :: $message";
+    }
     fwrite($fp, "$timestamp : $message\n");
   }
 
@@ -294,7 +297,7 @@ class CRM_Dupmon_Util {
     ");
     $cleanedCount = 0;
     while ($dao->fetch()) {
-      CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: About to delete group id = {$dao->id}");
+      CRM_Dupmon_Util::debugLog("About to delete group id = {$dao->id}", __FUNCTION__);
       civicrm_api3('group', 'delete', [
         'id' => $dao->id,
       ]);

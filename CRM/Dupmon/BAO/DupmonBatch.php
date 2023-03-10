@@ -25,7 +25,7 @@ class CRM_Dupmon_BAO_DupmonBatch extends CRM_Dupmon_DAO_DupmonBatch {
         'title' => 'DedupeMonitorBatch_' . uniqid(),
       ]);
       $groupId = $groupCreate['id'];
-      CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: creating batch (group_id: $groupId)");
+      CRM_Dupmon_Util::debugLog("creating batch (group_id: $groupId)", __METHOD__);
       $params['group_id'] = $groupId;
     }
 
