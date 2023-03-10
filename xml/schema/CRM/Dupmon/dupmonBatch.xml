@@ -51,7 +51,7 @@
   <field>
     <name>created</name>
     <default>CURRENT_TIMESTAMP</default>
-    <type>datetime</type>
+    <type>timestamp</type>
     <comment>Date/Time created</comment>
   </field>
 

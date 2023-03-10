@@ -39,7 +39,7 @@ CREATE TABLE `civicrm_dupmon_batch` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique DupmonRuleMonitor ID',
   `group_id` int unsigned NOT NULL COMMENT 'FK to Group (required in sql but not in api)',
   `rule_group_id` int unsigned NOT NULL COMMENT 'FK to Dedupe Rule Group',
-  `created` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Date/Time created',
+  `created` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT 'Date/Time created',
   PRIMARY KEY (`id`),
   CONSTRAINT FK_civicrm_dupmon_batch_group_id FOREIGN KEY (`group_id`) REFERENCES `civicrm_group`(`id`) ON DELETE CASCADE,
   CONSTRAINT FK_civicrm_dupmon_batch_rule_group_id FOREIGN KEY (`rule_group_id`) REFERENCES `civicrm_dedupe_rule_group`(`id`) ON DELETE CASCADE
