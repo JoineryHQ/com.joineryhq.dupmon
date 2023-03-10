@@ -41,8 +41,8 @@
     </div>
   {else}
     <div class="messages status no-popup">
-        {icon icon="fa-info-circle"}{/icon}
-      {ts}No batches found.{/ts}
+      {icon icon="fa-info-circle"}{/icon}
+      {ts}No batches found. More batches may be created after the next Scheduled Jobs run.{/ts}
     </div>
   {/if}
 </div>
