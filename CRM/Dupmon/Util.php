@@ -179,11 +179,12 @@ class CRM_Dupmon_Util {
     }
     // Reduce $batchSize if it's larger than the configured maximum.
     $maxBatchSize = Civi::settings()->get('dupmon_max_batch_size');
+    $originaBatchSize = $batchSize;
     $batchSize = min([
-      $batchSize,
+      $originaBatchSize,
       $maxBatchSize,
     ]);
-    CRM_Dupmon_Util::debugLog("batch size is $batchSize (smaller of $batchSize, $maxBatchSize)", __FUNCTION__);
+    CRM_Dupmon_Util::debugLog("batch size is $batchSize (smaller of $originaBatchSize, $maxBatchSize)", __FUNCTION__);
 
     $allDupeCids = array_unique(
       // TODO: this could be a place to optimize; in testing, larger arrays of $dupes,
