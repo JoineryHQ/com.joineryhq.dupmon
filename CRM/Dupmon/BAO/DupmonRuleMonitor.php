@@ -1,6 +1,8 @@
 <?php
+
 // phpcs:disable
 use CRM_Dupmon_ExtensionUtil as E;
+
 // phpcs:enable
 
 class CRM_Dupmon_BAO_DupmonRuleMonitor extends CRM_Dupmon_DAO_DupmonRuleMonitor {
@@ -11,7 +13,6 @@ class CRM_Dupmon_BAO_DupmonRuleMonitor extends CRM_Dupmon_DAO_DupmonRuleMonitor 
    * @param array $params key-value pairs
    * @return CRM_Dupmon_DAO_DupmonRuleMonitor|NULL
    */
-
   public static function create($params) {
     $className = 'CRM_Dupmon_DAO_DupmonRuleMonitor';
     $entityName = 'DupmonRuleMonitor';
@@ -30,6 +31,5 @@ class CRM_Dupmon_BAO_DupmonRuleMonitor extends CRM_Dupmon_DAO_DupmonRuleMonitor 
 
     return $instance;
   }
-
 
 }

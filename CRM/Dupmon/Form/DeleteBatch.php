@@ -59,5 +59,4 @@ class CRM_Dupmon_Form_DeleteBatch extends CRM_Core_Form {
     parent::postProcess();
   }
 
-
 }

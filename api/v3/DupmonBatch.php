@@ -11,11 +11,11 @@ use CRM_Dupmon_ExtensionUtil as E;
  */
 function _civicrm_api3_dupmon_batch_create_spec(&$spec) {
   $spec['rule_group_id']['api.required'] = 1;
-  
+
   // NOTE: The group_id column is required in SQL, but we do not require a group_id
   // param in this api. Instead, we will create a group in the api 'create' action,
   // and use that group_id.
-  $spec['group_id']['api.required'] = 0;  
+  $spec['group_id']['api.required'] = 0;
 }
 
 /**

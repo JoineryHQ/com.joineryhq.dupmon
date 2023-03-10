@@ -1,13 +1,14 @@
 <?php
+
 // phpcs:disable
 use CRM_Dupmon_ExtensionUtil as E;
+
 // phpcs:enable
 
 /**
  * Collection of upgrade steps.
  */
 class CRM_Dupmon_Upgrader extends CRM_Dupmon_Upgrader_Base {
-
   // By convention, functions that look like "function upgrade_NNNN()" are
   // upgrade tasks. They are executed in order (like Drupal's hook_update_N).
 
@@ -28,24 +29,24 @@ class CRM_Dupmon_Upgrader extends CRM_Dupmon_Upgrader_Base {
    * created during the installation (e.g., a setting or a managed entity), do
    * so here to avoid order of operation problems.
    */
-   public function postInstall(): void {
-      // Create ruleMonitors for all non-supervised dedupe rules (supervised
-      // rules are likely to generate many false-positives, so we don't
-      // monitor them by default.
-      $result = civicrm_api3('RuleGroup', 'get', [
-        'sequential' => 1,
-        'used' => ['!=' => "Supervised"],
-        'options' => ['limit' => 0],
-        'api.DupmonRuleMonitor.create' => ['rule_group_id' => "\$value.id"],
-      ]);
-      // Create a dashlet for scan alerts
-      $sql = "SELECT count(*) FROM civicrm_dashboard WHERE name='dupmonAlert'";
-      $res = CRM_Core_DAO::singleValueQuery($sql);
-      if ($res <= 0) {
-        $sqlParams = [
-          '1' => [CRM_Core_Config::domainID(), 'String'],
-        ];
-        $sql = "  
+  public function postInstall(): void {
+    // Create ruleMonitors for all non-supervised dedupe rules (supervised
+    // rules are likely to generate many false-positives, so we don't
+    // monitor them by default.
+    $result = civicrm_api3('RuleGroup', 'get', [
+      'sequential' => 1,
+      'used' => ['!=' => "Supervised"],
+      'options' => ['limit' => 0],
+      'api.DupmonRuleMonitor.create' => ['rule_group_id' => "\$value.id"],
+    ]);
+    // Create a dashlet for scan alerts
+    $sql = "SELECT count(*) FROM civicrm_dashboard WHERE name='dupmonAlert'";
+    $res = CRM_Core_DAO::singleValueQuery($sql);
+    if ($res <= 0) {
+      $sqlParams = [
+        '1' => [CRM_Core_Config::domainID(), 'String'],
+      ];
+      $sql = "  
           INSERT INTO `civicrm_dashboard` (
             `domain_id`, `name`, `label`, `url`, `permission`, `permission_operator`, `fullscreen_url`, `is_active`, `is_reserved`, `cache_minutes`, `directive`
           )
@@ -53,27 +54,27 @@ class CRM_Dupmon_Upgrader extends CRM_Dupmon_Upgrader_Base {
             %1, 'dupmonAlert', 'Dedupe Monitor Alert', 'civicrm/dupmon/alert?reset=1', 'merge duplicate contacts', NULL, 'civicrm/dupmon/alert?reset=1&context=dashletFullscreen', '1', '1', '60', NULL
           )
         ";
-        CRM_Core_DAO::executeQuery($sql, $sqlParams);
-      }
-   }
+      CRM_Core_DAO::executeQuery($sql, $sqlParams);
+    }
+  }
 
   /**
    * Uninstall actions.
    * Note that if a file is present sql\auto_uninstall that will run regardless of this hook.
    */
-   public function uninstall(): void {
-     // Delete all dupmonBatch Groups.
-     $this->executeSql("DELETE FROM civicrm_group WHERE name LIKE 'DedupeMonitorBatch_%' AND is_hidden");
-     // Delete dupmonAlert dashlet
-     $dashboardGet = civicrm_api3('dashboard', 'get', [
-       'name' => 'dupmonAlert',
-     ]);
-     foreach ($dashboardGet['values'] as $dashboard) {
-     $dashboardGet = civicrm_api3('dashboard', 'delete', [
-       'id' => $dashboard['id'],
-     ]);       
-     }
-   }
+  public function uninstall(): void {
+    // Delete all dupmonBatch Groups.
+    $this->executeSql("DELETE FROM civicrm_group WHERE name LIKE 'DedupeMonitorBatch_%' AND is_hidden");
+    // Delete dupmonAlert dashlet
+    $dashboardGet = civicrm_api3('dashboard', 'get', [
+      'name' => 'dupmonAlert',
+    ]);
+    foreach ($dashboardGet['values'] as $dashboard) {
+      $dashboardGet = civicrm_api3('dashboard', 'delete', [
+        'id' => $dashboard['id'],
+      ]);
+    }
+  }
 
   /**
    * Example: Run a simple query when a module is enabled.
@@ -123,7 +124,6 @@ class CRM_Dupmon_Upgrader extends CRM_Dupmon_Upgrader_Base {
    */
   // public function upgrade_4202(): bool {
   //   $this->ctx->log->info('Planning update 4202'); // PEAR Log interface
-
   //   $this->addTask(E::ts('Process first step'), 'processPart1', $arg1, $arg2);
   //   $this->addTask(E::ts('Process second step'), 'processPart2', $arg3, $arg4);
   //   $this->addTask(E::ts('Process second step'), 'processPart3', $arg5);
@@ -142,7 +142,6 @@ class CRM_Dupmon_Upgrader extends CRM_Dupmon_Upgrader_Base {
    */
   // public function upgrade_4203(): bool {
   //   $this->ctx->log->info('Planning update 4203'); // PEAR Log interface
-
   //   $minId = CRM_Core_DAO::singleValueQuery('SELECT coalesce(min(id),0) FROM civicrm_contribution');
   //   $maxId = CRM_Core_DAO::singleValueQuery('SELECT coalesce(max(id),0) FROM civicrm_contribution');
   //   for ($startId = $minId; $startId <= $maxId; $startId += self::BATCH_SIZE) {

@@ -1,6 +1,8 @@
 <?php
+
 // phpcs:disable
 use CRM_Dupmon_ExtensionUtil as E;
+
 // phpcs:enable
 
 class CRM_Dupmon_BAO_DupmonBatch extends CRM_Dupmon_DAO_DupmonBatch {
@@ -20,7 +22,7 @@ class CRM_Dupmon_BAO_DupmonBatch extends CRM_Dupmon_DAO_DupmonBatch {
       // If we're creating a batch, we must create a group for it.
       $groupCreate = civicrm_api3('group', 'create', [
         'is_hidden' => TRUE,
-        'title' => 'DedupeMonitorBatch_'. uniqid(),
+        'title' => 'DedupeMonitorBatch_' . uniqid(),
       ]);
       $groupId = $groupCreate['id'];
       CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: creating batch (group_id: $groupId)");
@@ -54,4 +56,5 @@ class CRM_Dupmon_BAO_DupmonBatch extends CRM_Dupmon_DAO_DupmonBatch {
     ]);
     return $instance;
   }
+
 }

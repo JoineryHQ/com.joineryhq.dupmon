@@ -1,6 +1,7 @@
 <?php
 
 class CRM_Dupmon_Util {
+
   /**
    * Get all configured rule monitors.
    * FIXME: STUB.
@@ -29,7 +30,7 @@ class CRM_Dupmon_Util {
       'id' => $ruleMonitor['id'],
       'scan_limit' => $limit,
     ];
-    $maxScanCid = (int)max($scanCids);
+    $maxScanCid = (int) max($scanCids);
     // Check to see if we've reached the end of all contacts of this type.
     // (Remember, we're proceeding through all contacts, in order by contactId;
     // so we want to know if there's even 1 undeleted contacts of this type
@@ -74,7 +75,7 @@ class CRM_Dupmon_Util {
   }
 
   public static function scanRule($rgid, $cids) {
-    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Scanning with rule $rgid, contact_count = ". count($cids));
+    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Scanning with rule $rgid, contact_count = " . count($cids));
     $dbMaxQueryTimeVariableProps = self::getDbMaxQueryTimeVariableProps();
 
     $variableDao = CRM_Core_DAO::executeQuery("SHOW VARIABLES LIKE '%{$dbMaxQueryTimeVariableProps['name']}%'");
@@ -93,12 +94,12 @@ class CRM_Dupmon_Util {
         throw new CRM_Dupmon_Exception('Dedupe scan exceeded the congigured max query time.', 'TIMEOUT');
       }
       else {
-        CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Other error: ". $e->getMessage());
+        CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Other error: " . $e->getMessage());
         throw $e;
       }
     }
     CRM_Core_DAO::executeQuery("SET SESSION {$dbMaxQueryTimeVariableProps['name']}={$originalTimeLimit}");
-    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Found dupes: ". count($dupes));
+    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: Found dupes: " . count($dupes));
     return $dupes;
   }
 
@@ -180,7 +181,7 @@ class CRM_Dupmon_Util {
       // nothing to do.
       return;
     }
-    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: unbatched cids count: ". count($unbatchedCids));
+    CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: unbatched cids count: " . count($unbatchedCids));
     $cidBatches = array_chunk($unbatchedCids, $batchSize);
     foreach ($cidBatches as $cidBatch) {
       // FIXME: TODO: create batchGroup entity with group id.
@@ -231,7 +232,7 @@ class CRM_Dupmon_Util {
     $file = CRM_Core_Config::singleton()->configAndLogDir . 'dupmon.log.txt';
     $fp = fopen($file, 'a');
     $timestamp = date('Y-m-d H:i:s');
-    fputs($fp, "$timestamp : $message\n");
+    fwrite($fp, "$timestamp : $message\n");
   }
 
   public static function cleanupEmptyBatches() {
@@ -273,10 +274,10 @@ class CRM_Dupmon_Util {
     }
   }
 
-  static function getRuleHash($ruleGroupId) {
+  public static function getRuleHash($ruleGroupId) {
     $ruleGroup = civicrm_api3('ruleGroup', 'getSingle', [
       'id' => $ruleGroupId,
-      'api.rule.get' => ['dedupe_rule_group_id' => '$value.id']
+      'api.rule.get' => ['dedupe_rule_group_id' => '$value.id'],
     ]);
     foreach ($ruleGroup['api.rule.get']['values'] as &$rule) {
       // Strip IDs. These are changed with every ruleGroup save, but they are
@@ -287,7 +288,7 @@ class CRM_Dupmon_Util {
     return hash('sha256', serialize($ruleGroup));
   }
 
-  static function updateRuleHash($ruleGroupId, $force = FALSE) {
+  public static function updateRuleHash($ruleGroupId, $force = FALSE) {
     $newHash = CRM_Dupmon_Util::getRuleHash($ruleGroupId);
     $ruleInfo = civicrm_api3('dupmonRuleInfo', 'get', [
       'sequential' => 1,
@@ -298,8 +299,7 @@ class CRM_Dupmon_Util {
       $oldHash = $ruleInfo['values'][0]['hash'];
     }
     if (
-      $force
-      || ($oldHash != $newHash)
+      $force || ($oldHash != $newHash)
     ) {
       // Hash has changed. Update the stored hash.
       $ruleInfoCreate = civicrm_api3('dupmonRuleInfo', 'create', [
@@ -322,7 +322,6 @@ class CRM_Dupmon_Util {
       // on next run.
       $ruleMonitorGet = civicrm_api3('dupmonRuleMonitor', 'get', [
         'rule_group_id' => $ruleGroupId,
-
       ]);
       foreach ($ruleMonitorGet['values'] as $ruleMonitor) {
         civicrm_api3('dupmonRuleMonitor', 'create', [
@@ -332,4 +331,5 @@ class CRM_Dupmon_Util {
       }
     }
   }
+
 }

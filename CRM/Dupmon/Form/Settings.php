@@ -8,9 +8,9 @@ use CRM_Dupmon_ExtensionUtil as E;
  * @see https://docs.civicrm.org/dev/en/latest/framework/quickform/
  */
 class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
+
   private $_ruleGroups;
   private $_ruleMonitors;
-
   public static $settingFilter = array('group' => 'dupmon');
   public static $extensionName = 'dupmon';
   private $_submittedValues = array();
@@ -53,13 +53,13 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
       'options' => [
         'limit' => 0,
         'sort' => "contact_type, used, title",
-      ]
+      ],
     ]);
     $this->_ruleGroups = $ruleGroupGet['values'];
     $ruleMonitorGet = civicrm_api3('dupmonRuleMonitor', 'get', [
       'options' => [
         'limit' => 0,
-      ]
+      ],
     ]);
     $this->_ruleMonitors = $ruleMonitorGet['values'];
   }
@@ -69,13 +69,13 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
     $this->assign('ruleGroups', $this->_ruleGroups);
 
     foreach ($this->_ruleGroups as $ruleGroup) {
-      $this->addElement('checkbox', 'enable-monitor-rule-group-'. $ruleGroup['id']);
+      $this->addElement('checkbox', 'enable-monitor-rule-group-' . $ruleGroup['id']);
     }
 
     $this->addButtons(array(
       array(
         'type' => 'submit',
-          'name' => E::ts('Submit'),
+        'name' => E::ts('Submit'),
         'isDefault' => TRUE,
       ),
       array(
@@ -164,7 +164,7 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
   public function postProcess() {
     $values = $this->exportValues();
     foreach ($this->_ruleGroups as $ruleGroupId => $ruleGroup) {
-      if($values['enable-monitor-rule-group-'. $ruleGroupId]) {
+      if ($values['enable-monitor-rule-group-' . $ruleGroupId]) {
         $this->_doMonitorGroup($ruleGroupId, TRUE);
       }
       else {
@@ -206,7 +206,6 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
     $result = civicrm_api3('setting', 'get', array('return' => array_keys($this->_settings)));
     $domainID = CRM_Core_Config::domainID();
     $ret = CRM_Utils_Array::value($domainID, $result['values']);
-
 
     $monitoredRuleGroupIds = CRM_Utils_Array::collect('rule_group_id', $this->_ruleMonitors);
     foreach ($monitoredRuleGroupIds as $monitoredRuleGroupId) {

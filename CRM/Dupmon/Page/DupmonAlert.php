@@ -1,4 +1,5 @@
 <?php
+
 use CRM_Dupmon_ExtensionUtil as E;
 
 class CRM_Dupmon_Page_DupmonAlert extends CRM_Core_Page {
@@ -27,7 +28,6 @@ class CRM_Dupmon_Page_DupmonAlert extends CRM_Core_Page {
       $this->assign('reviewUrl', $url);
       $this->assign('alert', $alert);
     }
-
 
     parent::run();
   }

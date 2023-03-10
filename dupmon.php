@@ -103,8 +103,6 @@ function dupmon_civicrm_entityTypes(&$entityTypes): void {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
  */
 function dupmon_civicrm_navigationMenu(&$menu) {
-//  _dupmon_get_max_navID($menu, $max_navID);
-
   $items = [];
   $items[] = [
     'parent' => 'Contacts/Find and Merge Duplicate Contacts',
@@ -115,7 +113,7 @@ function dupmon_civicrm_navigationMenu(&$menu) {
       'permission' => 'merge duplicate contacts',
       'operator' => 'AND',
       'separator' => NULL,
-    ]
+    ],
   ];
   $items[] = [
     'parent' => 'Contacts/Find and Merge Duplicate Contacts/Dedupe Monitor',
@@ -127,7 +125,7 @@ function dupmon_civicrm_navigationMenu(&$menu) {
       'operator' => 'AND',
       'separator' => NULL,
       'icon' => 'crm-i fa-rocket',
-    ]
+    ],
   ];
   $items[] = [
     'parent' => 'Contacts/Find and Merge Duplicate Contacts/Dedupe Monitor',
@@ -139,28 +137,10 @@ function dupmon_civicrm_navigationMenu(&$menu) {
       'operator' => 'AND',
       'separator' => NULL,
       'icon' => 'crm-i fa-gear',
-    ]
+    ],
   ];
   foreach ($items as $item) {
-//    $item['properties']['navID'] = ++$max_navID;
     _dupmon_civix_insert_navigation_menu($menu, $item['parent'], $item['properties']);
   }
   _dupmon_civix_navigationMenu($menu);
-}
-
-/**
- * For an array of menu items, recursively get the value of the greatest navID
- * attribute.
- * @param <type> $menu
- * @param <type> $max_navID
- */
-function _dupmon_get_max_navID(&$menu, &$max_navID = NULL) {
-  foreach ($menu as $id => $item) {
-    if (!empty($item['attributes']['navID'])) {
-      $max_navID = max($max_navID, $item['attributes']['navID']);
-    }
-    if (!empty($item['child'])) {
-      _dupmon_get_max_navID($item['child'], $max_navID);
-    }
-  }
 }

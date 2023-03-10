@@ -41,15 +41,16 @@ function civicrm_api3_dedupe_monitor_Scan($params) {
       try {
         $dupes = CRM_Dupmon_Util::scanRule($ruleMonitor['rule_group_id'], $cids);
         $ruleCompleted = TRUE;
-      } catch (CRM_Dupmon_Exception $e) {
+      }
+      catch (CRM_Dupmon_Exception $e) {
         CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: trying to get next quantum for current limit = $limit");
         $limit = CRM_Dupmon_Util::getNextLimitQuantum($limit);
         CRM_Dupmon_Util::debugLog(__FUNCTION__ . " :: got next quantum limit: $limit");
       }
     }
-    
+
     CRM_Dupmon_Util::updateRuleMonitor($ruleMonitor, $limit, $cids);
-    
+
     // If any dupes were found, process them into batches:
     if (!empty($dupes)) {
       CRM_Dupmon_Util::createBatches($dupes, $cids, $ruleMonitor['rule_group_id'], $limit);
@@ -59,7 +60,7 @@ function civicrm_api3_dedupe_monitor_Scan($params) {
   // Cleanup any empty batches that may be hanging around (e.g. if all of the
   // batch contacts have been deleted by deduping or other means).
   CRM_Dupmon_Util::cleanupEmptyBatches();
-  
+
   // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
   return civicrm_api3_create_success($returnValues, $params, 'DedupeMonitor', 'Scan');
 }
