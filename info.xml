@@ -1,26 +1,26 @@
 <?xml version="1.0"?>
 <extension key="com.joineryhq.dupmon" type="module">
   <file>dupmon</file>
-  <name>com.joineryhq.dupmon</name>
-  <description>FIXME</description>
+  <name>Dedupe Monitor</name>
+  <description>Eases duplicate detection by performing periodic background scans for duplicate candidates across all contacts, for each appropriately configured Dedupe Rule; duplicate candidate are presented in reviewable batches.</description>
   <license>GPL-3.0</license>
   <maintainer>
     <author>Allen Shaw</author>
     <email>allen@JoineryHQ.com</email>
   </maintainer>
   <urls>
-    <url desc="Main Extension Page">http://FIXME</url>
-    <url desc="Documentation">http://FIXME</url>
-    <url desc="Support">http://FIXME</url>
+    <url desc="Main Extension Page">https://github.com/JoineryHQ/com.joineryhq.dupmon</url>
+    <url desc="Documentation">https://github.com/JoineryHQ/com.joineryhq.dupmon</url>
+    <url desc="Support">https://joineryhq.com</url>
     <url desc="Licensing">http://www.gnu.org/licenses/gpl-3.0.html</url>
   </urls>
-  <releaseDate>2023-03-05</releaseDate>
-  <version>1.0</version>
-  <develStage>alpha</develStage>
+  <releaseDate>2023-03-09</releaseDate>
+  <version>1.0.0</version>
+  <develStage>stable</develStage>
   <compatibility>
     <ver>5.0</ver>
   </compatibility>
-  <comments>This is a new, undeveloped module</comments>
+  <comments>Development by Joinery.</comments>
   <classloader>
     <psr0 prefix="CRM_" path="."/>
     <psr4 prefix="Civi\" path="Civi"/>
