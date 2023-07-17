@@ -33,7 +33,7 @@ scanning with each Dedupe Rule against small sub-sets of your contacts.
 
 * MariaDB
 
-This extension relies on MariaDB's MAX_EXEMAX_EXECUTION_TIME variable to prevent
+This extension relies on MariaDB's MAX_EXECUTION_TIME variable to prevent
 dedupe scans from locking up the site or otherwise running amok. 
 
 Sites running MySQL can use it if they have smaller numbers of contacts. Such a
