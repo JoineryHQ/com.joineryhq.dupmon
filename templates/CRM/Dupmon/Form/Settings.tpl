@@ -1,5 +1,5 @@
 <div class="help">
-  {capture assign="batchesLink"}{crmURL p="civicrm/admin/dupmon/batches" q="reset=1"}{/capture}
+  {capture assign="batchesLink"}{crmURL p="civicrm/admin/dupmon/batches" q="reset=1" h=0}{/capture}
   <p>Dedupe Monitor scans regularly for duplicate candidates across all contacts. Dedupe Rules, if configured here for monitoring, will be applied during these scans.</p>
   {crmButton href="$batchesLink" class="edit" title="Configure" icon=fa-rocket}{ts}View Scanned Batches{/ts}{/crmButton}
   <div class="clear"></div>
