@@ -164,13 +164,10 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
   public function postProcess() {
     $values = $this->exportValues();
     foreach ($this->_ruleGroups as $ruleGroupId => $ruleGroup) {
-      if ($values['enable-monitor-rule-group-' . $ruleGroupId]) {
-        $this->_doMonitorGroup($ruleGroupId, TRUE);
-      }
-      else {
-        // Delete any rule monitor for this group.
-        $this->_doMonitorGroup($ruleGroupId, FALSE);
-      }
+      $monitorParams = [
+        'is_active' => (bool) $values['enable-monitor-rule-group-' . $ruleGroupId],
+      ];
+      $this->_saveGroupMonitor($ruleGroupId, $monitorParams);
     }
     $this->saveSettings();
 
@@ -207,39 +204,25 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
     $domainID = CRM_Core_Config::domainID();
     $ret = CRM_Utils_Array::value($domainID, $result['values']);
 
-    $monitoredRuleGroupIds = CRM_Utils_Array::collect('rule_group_id', $this->_ruleMonitors);
-    foreach ($monitoredRuleGroupIds as $monitoredRuleGroupId) {
-      $ret['enable-monitor-rule-group-' . $monitoredRuleGroupId] = 1;
+    foreach ($this->_ruleMonitors as $ruleMonitor) {
+      if ($ruleMonitor['is_active']) {
+        $ret['enable-monitor-rule-group-' . $ruleMonitor['rule_group_id']] = 1;
+      }
     }
-
     return $ret;
   }
 
-  private function _doMonitorGroup(int $ruleGroupId, bool $doMonitor) {
-    // Get any exisitng rule monitor for this rule.
+  private function _saveGroupMonitor(int $ruleGroupId, $params) {
+    // Get any exisitng rule monitor for this rule (data structure allows maximum
+    // one monitor per group, but there may also be 0, because earlier extension
+    // versions lacked the is_active column, and deletion was the only way to
+    // disable a monitor).
     $ruleMonitorGet = civicrm_api3('dupmonRuleMonitor', 'get', [
       'rule_group_id' => $ruleGroupId,
     ]);
-    $ruleMonitorId = $ruleMonitorGet['id'];
-
-    if ($doMonitor) {
-      // We're instructed to ensure there's a monitor. If one exists, we can
-      // do nothing, but if not exists, we must created it.
-      if (empty($ruleMonitorId)) {
-        civicrm_api3('dupmonRuleMonitor', 'create', [
-          'rule_group_id' => $ruleGroupId,
-        ]);
-      }
-    }
-    else {
-      // We're instructed to ensure there's NOT a monitor. If one does not exist,
-      // we can do nothing, but if it does exist, we must delete it.
-      if (!empty($ruleMonitorId)) {
-        civicrm_api3('dupmonRuleMonitor', 'delete', [
-          'id' => $ruleMonitorId,
-        ]);
-      }
-    }
+    $params['id'] = $ruleMonitorGet['id'];
+    $params['rule_group_id'] = $ruleGroupId;
+    civicrm_api3('dupmonRuleMonitor', 'create', $params);
   }
 
   public function getSettingOptions($setting) {
