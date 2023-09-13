@@ -68,10 +68,7 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
 
     $this->assign('ruleGroups', $this->_ruleGroups);
 
-    $limitGroupIdOptions = array_merge(
-      [0 => E::ts('- none -')],
-      CRM_Contact_BAO_GroupContact::buildOptions('group_id')
-    );
+    $limitGroupIdOptions = [0 => E::ts('- none -')] + CRM_Contact_BAO_GroupContact::buildOptions('group_id');
 
     foreach ($this->_ruleGroups as $ruleGroup) {
       $this->addElement('checkbox', 'enable-monitor-rule-group-' . $ruleGroup['id']);
