@@ -57,19 +57,29 @@ class CRM_Dupmon_Util {
   /**
    * Get a set of contacts to scan for the given ruleMonitor properties
    */
-  public static function getScanContactList($contactType, $minCid = 0, $limit = 0) {
+  public static function getScanContactList($contactType, $minCid = 0, $limit = 0, $limitGroupId = NULL) {
     if (!$limit) {
       $limit = self::getNextLimitQuantum();
     }
-    $queryParams = [
-      1 => [$contactType, 'String'],
-      2 => [$minCid, 'Int'],
-      3 => [$limit, 'Int'],
+    // Use procedural api4 here, because we must conditionally add a WHERE based on
+    // $limitGroupId; OOP api4 was not returning a countable
+    // Civi\Api4\Generic\Result object unless ->execute() is oop-chained in the
+    // initial api call, e.g. $contacts = \Civi\Api4\Contact::get(FALSE)->...->execute();
+    $contactApiParams = [
+      'select' => ['id'],
+      'where' => [
+        ['id', '>', $minCid],
+        ['contact_type', '=', $contactType],
+        ['is_deleted', '=', FALSE],
+      ],
+      'limit' => $limit,
+      'checkPermissions' => FALSE,
     ];
-    $query = "SELECT id FROM civicrm_contact WHERE NOT is_deleted AND contact_type = %1 AND id > %2 ORDER BY id LIMIT %3";
-    $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
-    $rows = $dao->fetchAll();
-    $cids = CRM_Utils_Array::collect('id', $rows);
+    if ($limitGroupId) {
+      $contactApiParams['where'][] = ['groups', 'IN', [$limitGroupId]];
+    }
+    $contacts = civicrm_api4('Contact', 'get', $contactApiParams);
+    $cids = CRM_Utils_Array::collect('id', $contacts->getArrayCopy());
     sort($cids);
     return $cids;
   }
@@ -251,13 +261,11 @@ class CRM_Dupmon_Util {
     if (!Civi::settings()->get('dupmon_debug_log')) {
       return;
     }
-    $file = CRM_Core_Config::singleton()->configAndLogDir . 'dupmon.log.txt';
-    $fp = fopen($file, 'a');
-    $timestamp = date('Y-m-d H:i:s');
     if ($prefix) {
       $message = "{$prefix} :: $message";
     }
-    fwrite($fp, "$timestamp : $message\n");
+    // Write to a dedicated log file which will be managed by civicrm.
+    CRM_Core_Error::debug_log_message($message, FALSE, 'dupmon');
   }
 
   /**

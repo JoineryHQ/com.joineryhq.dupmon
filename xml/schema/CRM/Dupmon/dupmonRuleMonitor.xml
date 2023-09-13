@@ -46,4 +46,15 @@
     <comment>minimum contact ID to scan with this rule (1 + max cid from previous scan)</comment>
   </field>
 
+  <field>
+    <name>limit_group_id</name>
+    <type>int unsigned</type>
+    <comment>FK to civicrm_group.id (limit monitor to contacts in this group, if specified)</comment>
+  </field>
+  <foreignKey>
+    <name>limit_group_id</name>
+    <table>civicrm_group</table>
+    <key>id</key>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
 </table>

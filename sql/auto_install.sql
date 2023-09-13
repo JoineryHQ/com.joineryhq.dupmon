@@ -74,7 +74,9 @@ CREATE TABLE `civicrm_dupmon_rule_monitor` (
   `rule_group_id` int unsigned COMMENT 'FK to Dedupe Rule Group',
   `scan_limit` int unsigned COMMENT 'maximum number of contacts to scan with this rule ()',
   `min_cid` int unsigned DEFAULT 0 COMMENT 'minimum contact ID to scan with this rule (1 + max cid from previous scan)',
+  `limit_group_id` int unsigned COMMENT 'FK to civicrm_group.id (limit monitor to contacts in this group, if specified)',
   PRIMARY KEY (`id`),
-  CONSTRAINT FK_civicrm_dupmon_rule_monitor_rule_group_id FOREIGN KEY (`rule_group_id`) REFERENCES `civicrm_dedupe_rule_group`(`id`) ON DELETE CASCADE
+  CONSTRAINT FK_civicrm_dupmon_rule_monitor_rule_group_id FOREIGN KEY (`rule_group_id`) REFERENCES `civicrm_dedupe_rule_group`(`id`) ON DELETE CASCADE,
+  CONSTRAINT FK_civicrm_dupmon_rule_monitor_limit_group_id FOREIGN KEY (`limit_group_id`) REFERENCES `civicrm_group`(`id`) ON DELETE SET NULL
 )
 ENGINE=InnoDB;

@@ -96,12 +96,15 @@ class CRM_Dupmon_Upgrader extends CRM_Extension_Upgrader_Base {
    * @return TRUE on success
    * @throws CRM_Core_Exception
    */
-  // public function upgrade_4200(): bool {
-  //   $this->ctx->log->info('Applying update 4200');
-  //   CRM_Core_DAO::executeQuery('UPDATE foo SET bar = "whiz"');
-  //   CRM_Core_DAO::executeQuery('DELETE FROM bang WHERE willy = wonka(2)');
-  //   return TRUE;
-  // }
+  public function upgrade_0001(): bool {
+    $this->ctx->log->info('Applying update 0001');
+    CRM_Core_DAO::executeQuery("
+      ALTER TABLE civicrm_dupmon_rule_monitor
+      ADD limit_group_id int unsigned COMMENT 'FK to civicrm_group.id (limit monitor to contacts in this group, if specified)',
+      ADD FOREIGN KEY (limit_group_id) REFERENCES civicrm_group (id) ON DELETE SET NULL
+    ");
+    return TRUE;
+  }
 
   /**
    * Example: Run an external SQL script.
