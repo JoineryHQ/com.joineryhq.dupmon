@@ -77,6 +77,7 @@ CREATE TABLE `civicrm_dupmon_rule_monitor` (
   `limit_group_id` int unsigned COMMENT 'FK to civicrm_group.id (limit monitor to contacts in this group, if specified)',
   `is_active` tinyint DEFAULT 1 COMMENT 'Is this monitor active?',
   PRIMARY KEY (`id`),
+  UNIQUE INDEX `rule_group_id`(rule_group_id),
   CONSTRAINT FK_civicrm_dupmon_rule_monitor_rule_group_id FOREIGN KEY (`rule_group_id`) REFERENCES `civicrm_dedupe_rule_group`(`id`) ON DELETE CASCADE,
   CONSTRAINT FK_civicrm_dupmon_rule_monitor_limit_group_id FOREIGN KEY (`limit_group_id`) REFERENCES `civicrm_group`(`id`) ON DELETE SET NULL
 )

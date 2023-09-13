@@ -91,7 +91,7 @@ class CRM_Dupmon_Upgrader extends CRM_Extension_Upgrader_Base {
   // }
 
   /**
-   * Example: Run a couple simple queries.
+   * Modify civicrm_dupmon_rule_monitor table with new columns.
    *
    * @return TRUE on success
    * @throws CRM_Core_Exception
@@ -103,6 +103,21 @@ class CRM_Dupmon_Upgrader extends CRM_Extension_Upgrader_Base {
       ADD limit_group_id int unsigned COMMENT 'FK to civicrm_group.id (limit monitor to contacts in this group, if specified)',
       ADD `is_active` tinyint DEFAULT 1 COMMENT 'Is this monitor active?',
       ADD FOREIGN KEY (limit_group_id) REFERENCES civicrm_group (id) ON DELETE SET NULL
+    ");
+    return TRUE;
+  }
+
+  /**
+   * Create unique index for civicrm_dupmon_rule_monitor.rule_group_id
+   *
+   * @return TRUE on success
+   * @throws CRM_Core_Exception
+   */
+  public function upgrade_0002(): bool {
+    $this->ctx->log->info('Applying update 0003');
+    CRM_Core_DAO::executeQuery("
+      ALTER TABLE civicrm_dupmon_rule_monitor
+      ADD UNIQUE INDEX `rule_group_id`(rule_group_id)
     ");
     return TRUE;
   }

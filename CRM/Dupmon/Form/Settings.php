@@ -214,9 +214,10 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
 
   private function _saveGroupMonitor(int $ruleGroupId, $params) {
     // Get any exisitng rule monitor for this rule (data structure allows maximum
-    // one monitor per group, but there may also be 0, because earlier extension
-    // versions lacked the is_active column, and deletion was the only way to
-    // disable a monitor).
+    // one monitor per group, but there may also be 0, because we make no effort
+    // to create a new "monitor" record for every new dedupe rule.
+    // However this, form, upon saving, happens to ensure existence of a monitor
+    // for every dedupe rule that exists at the time.
     $ruleMonitorGet = civicrm_api3('dupmonRuleMonitor', 'get', [
       'rule_group_id' => $ruleGroupId,
     ]);

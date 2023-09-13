@@ -63,5 +63,11 @@
     <type>boolean</type>
     <default>1</default>
     <comment>Is this monitor active?</comment>
-  </field>  
+  </field>
+
+  <index>
+    <name>is_active</name>
+    <fieldName>rule_group_id</fieldName>
+    <unique>true</unique>
+  </index>
 </table>
