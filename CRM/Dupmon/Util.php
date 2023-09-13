@@ -97,7 +97,6 @@ class CRM_Dupmon_Util {
     $contacts = civicrm_api4('Contact', 'get', $contactApiParams);
     $cids = CRM_Utils_Array::collect('id', $contacts->getArrayCopy());
     sort($cids);
-    CRM_Dupmon_Util::debugLog("Contacts found via api4: :". json_encode($cids), __FUNCTION__);
     return $cids;
   }
 
