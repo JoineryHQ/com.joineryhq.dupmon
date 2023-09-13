@@ -27,7 +27,7 @@ function _civicrm_api3_dedupe_monitor_Scan_spec(&$spec) {
  */
 function civicrm_api3_dedupe_monitor_Scan($params) {
   // Populate batches
-  $ruleMonitors = CRM_Dupmon_Util::getRuleMonitors();
+  $ruleMonitors = CRM_Dupmon_Util::getRuleMonitors(TRUE);
   $ruleMonitorsProcessed = [];
   $batchesCreatedCount = 0;
   foreach ($ruleMonitors as $ruleMonitor) {

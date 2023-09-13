@@ -4,17 +4,23 @@ class CRM_Dupmon_Util {
 
   /**
    * Get all configured rule monitors.
-   * FIXME: STUB.
+   *
+   * @param boolean $isActive If provided, limit returned monitors based on is_active setting.
+   * @return array
    */
-  public static function getRuleMonitors() {
+  public static function getRuleMonitors($isActive = NULL) {
     $ruleMonitors = [];
-    $dupmonRuleMonitorGet = civicrm_api3('dupmonRuleMonitor', 'get', [
+    $apiParams = [
       'options' => [
         'limit' => 0,
       ],
       'sequential' => 1,
       'api.RuleGroup.get' => [],
-    ]);
+    ];
+    if (isset($isActive)) {
+      $apiParams['is_active'] = (bool) $isActive;
+    }
+    $dupmonRuleMonitorGet = civicrm_api3('dupmonRuleMonitor', 'get', $apiParams);
 
     foreach ($dupmonRuleMonitorGet['values'] as $dupmonRuleMonitor) {
       $ruleMonitor = $dupmonRuleMonitor;
