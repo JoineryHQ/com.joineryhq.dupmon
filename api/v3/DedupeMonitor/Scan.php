@@ -43,14 +43,24 @@ function civicrm_api3_dedupe_monitor_Scan($params) {
     }
     while (!$ruleCompleted) {
       $cids = CRM_Dupmon_Util::getScanContactList($ruleMonitor['contact_type'], $ruleMonitor['min_cid'], $limit, $ruleMonitor['limit_group_id']);
-      try {
-        $dupes = CRM_Dupmon_Util::scanRule($ruleMonitor['rule_group_id'], $cids);
-        $ruleCompleted = TRUE;
+      if (!empty($cids)) {
+        try {
+          $dupes = CRM_Dupmon_Util::scanRule($ruleMonitor['rule_group_id'], $cids);
+          $ruleCompleted = TRUE;
+        }
+        catch (CRM_Dupmon_Exception $e) {
+          CRM_Dupmon_Util::debugLog("trying to get next quantum for current limit = $limit", __FUNCTION__);
+          $limit = CRM_Dupmon_Util::getNextLimitQuantum($limit);
+          CRM_Dupmon_Util::debugLog("got next quantum limit: $limit", __FUNCTION__);
+          if ($limit == 0) {
+            CRM_Dupmon_Util::debugLog("Reached quantum of '0'; cannot continue further with this monitor.", __FUNCTION__);
+            break;
+          }
+        }
       }
-      catch (CRM_Dupmon_Exception $e) {
-        CRM_Dupmon_Util::debugLog("trying to get next quantum for current limit = $limit", __FUNCTION__);
-        $limit = CRM_Dupmon_Util::getNextLimitQuantum($limit);
-        CRM_Dupmon_Util::debugLog("got next quantum limit: $limit", __FUNCTION__);
+      else {
+        CRM_Dupmon_Util::debugLog("Zero cids found for this monitor. Will not attempt to scan.", __FUNCTION__);
+        $ruleCompleted = TRUE;
       }
     }
 
