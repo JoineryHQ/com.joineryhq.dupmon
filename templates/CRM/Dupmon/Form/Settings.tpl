@@ -19,14 +19,17 @@
           <th>{ts}Contact type{/ts}</th>
           <th>{ts}Used for{/ts}</th>
           <th>{ts}Title{/ts}</th>
+          <th>{ts}Limit to Group?{/ts}</th>
         </tr>
         {foreach from=$ruleGroups item=ruleGroup}
-          {capture assign=checkboxFieldName}enable-monitor-rule-group-{$ruleGroup.id}{/capture}
+          {capture assign=isActiveFieldName}enable-monitor-rule-group-{$ruleGroup.id}{/capture}
+          {capture assign=limitGroupFieldName}limit-group-rule-group-{$ruleGroup.id}{/capture}
           <tr id="dupmon-monitor-rule-group-{$ruleGroup.id}" class="{cycle values="odd-row,even-row"}">
-            <td>{$form.$checkboxFieldName.html}</td>
+            <td>{$form.$isActiveFieldName.html}</td>
             <td>{$ruleGroups[$ruleGroup.id].contact_type}</td>
             <td>{$ruleGroups[$ruleGroup.id].used}</td>
             <td>{$ruleGroups[$ruleGroup.id].title}</td>
+            <td>{$form.$limitGroupFieldName.html}</td>
           </tr>
         {/foreach}
       </table>

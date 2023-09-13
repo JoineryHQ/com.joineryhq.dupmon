@@ -68,8 +68,27 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
 
     $this->assign('ruleGroups', $this->_ruleGroups);
 
+    $limitGroupIdOptions = array_merge(
+      [0 => E::ts('- none -')],
+      CRM_Contact_BAO_GroupContact::buildOptions('group_id')
+    );
+
     foreach ($this->_ruleGroups as $ruleGroup) {
       $this->addElement('checkbox', 'enable-monitor-rule-group-' . $ruleGroup['id']);
+      $this->add(
+        // field type
+        'select',
+        // field name
+        'limit-group-rule-group-' . $ruleGroup['id'],
+        // field label
+        '',
+        // options
+        $limitGroupIdOptions,
+        // what is this arg?
+        NULL,
+        // html attributes
+        NULL
+      );
     }
 
     $this->addButtons(array(
@@ -166,6 +185,7 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
     foreach ($this->_ruleGroups as $ruleGroupId => $ruleGroup) {
       $monitorParams = [
         'is_active' => (bool) $values['enable-monitor-rule-group-' . $ruleGroupId],
+        'limit_group_id' => $values['limit-group-rule-group-' . $ruleGroupId] ? $values['limit-group-rule-group-' . $ruleGroupId] : 'null',
       ];
       $this->_saveGroupMonitor($ruleGroupId, $monitorParams);
     }
@@ -205,9 +225,8 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
     $ret = CRM_Utils_Array::value($domainID, $result['values']);
 
     foreach ($this->_ruleMonitors as $ruleMonitor) {
-      if ($ruleMonitor['is_active']) {
-        $ret['enable-monitor-rule-group-' . $ruleMonitor['rule_group_id']] = 1;
-      }
+      $ret['enable-monitor-rule-group-' . $ruleMonitor['rule_group_id']] = (bool) $ruleMonitor['is_active'];
+      $ret['limit-group-rule-group-' . $ruleMonitor['rule_group_id']] = $ruleMonitor['limit_group_id'];
     }
     return $ret;
   }
