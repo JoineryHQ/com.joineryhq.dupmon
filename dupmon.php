@@ -28,8 +28,9 @@ function dupmon_civicrm_buildForm($formName, $form) {
 
 function dupmon_civicrm_postProcess($formName, $form) {
   if ($formName == 'CRM_Contact_Form_DedupeRules') {
-    $ruleGroupId = $form->getVar('_rgid');
-    CRM_Dupmon_Util::updateRuleHash($ruleGroupId);
+    if ($ruleGroupId = $form->getVar('_rgid')) {
+      CRM_Dupmon_Util::updateRuleHash($ruleGroupId);
+    }
   }
 }
 
