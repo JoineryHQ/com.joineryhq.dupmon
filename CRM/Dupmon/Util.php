@@ -37,15 +37,23 @@ class CRM_Dupmon_Util {
       'scan_limit' => $limit,
     ];
     $maxScanCid = (int) max($scanCids);
-    // Check to see if we've reached the end of all contacts of this type.
-    // (Remember, we're proceeding through all contacts, in order by contactId;
-    // so we want to know if there's even 1 undeleted contacts of this type
+    // Check to see if we've reached the end of all contacts we can scan.
+    // Remember, we're proceeding through all contacts (see note *), in order by contactId;
+    // so we want to know if there's even 1 of these contacts
     // with a greater contactId than the max contactId in our set of scanned contactIds.
-    $remainingContactCount = civicrm_api3('Contact', 'getcount', [
+    // * NOTE: "all contacts" in this case means "all undeleted contacts of the
+    //   type defined by the Dedupe Rule", optionally reduced further by requiring
+    //   that the contact be in the group idenditifed in $ruleMonitor['limit_group_id'],
+    //   if any.
+    $apiParams = [
       'id' => ['>' => $maxScanCid],
       'contact_type' => $ruleMonitor['contact_type'],
       'is_deleted' => 0,
-    ]);
+    ];
+    if ($ruleMonitor['limit_group_id']) {
+       $apiParams['group'] = ['IN' => [$ruleMonitor['limit_group_id']]];
+    }
+    $remainingContactCount = civicrm_api3('Contact', 'getcount', $apiParams);
     if ($remainingContactCount) {
       // We've found remaining unscanned contats. Therefore set this rule's
       // min_cid to start immediately after this set of scanned cids.
@@ -57,6 +65,7 @@ class CRM_Dupmon_Util {
       $minCid = 0;
     }
     $dupmonRuleMonitorParams['min_cid'] = $minCid;
+    CRM_Dupmon_Util::debugLog("Updating ruleMonitor with v3 params: :". json_encode($dupmonRuleMonitorParams), __FUNCTION__);
     civicrm_api3('dupmonRuleMonitor', 'create', $dupmonRuleMonitorParams);
   }
 
@@ -84,9 +93,11 @@ class CRM_Dupmon_Util {
     if ($limitGroupId) {
       $contactApiParams['where'][] = ['groups', 'IN', [$limitGroupId]];
     }
+    CRM_Dupmon_Util::debugLog("Getting contacts with api4 params: :". json_encode($contactApiParams), __FUNCTION__);
     $contacts = civicrm_api4('Contact', 'get', $contactApiParams);
     $cids = CRM_Utils_Array::collect('id', $contacts->getArrayCopy());
     sort($cids);
+    CRM_Dupmon_Util::debugLog("Contacts found via api4: :". json_encode($cids), __FUNCTION__);
     return $cids;
   }
 
