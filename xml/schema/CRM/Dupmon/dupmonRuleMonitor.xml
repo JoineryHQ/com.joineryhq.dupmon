@@ -57,4 +57,11 @@
     <key>id</key>
     <onDelete>SET NULL</onDelete>
   </foreignKey>
+
+  <field>
+    <name>is_active</name>
+    <type>boolean</type>
+    <default>1</default>
+    <comment>Is this monitor active?</comment>
+  </field>  
 </table>

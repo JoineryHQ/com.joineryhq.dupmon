@@ -101,6 +101,7 @@ class CRM_Dupmon_Upgrader extends CRM_Extension_Upgrader_Base {
     CRM_Core_DAO::executeQuery("
       ALTER TABLE civicrm_dupmon_rule_monitor
       ADD limit_group_id int unsigned COMMENT 'FK to civicrm_group.id (limit monitor to contacts in this group, if specified)',
+      ADD `is_active` tinyint DEFAULT 1 COMMENT 'Is this monitor active?',
       ADD FOREIGN KEY (limit_group_id) REFERENCES civicrm_group (id) ON DELETE SET NULL
     ");
     return TRUE;
