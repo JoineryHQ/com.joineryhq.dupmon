@@ -181,7 +181,7 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
     $values = $this->exportValues();
     foreach ($this->_ruleGroups as $ruleGroupId => $ruleGroup) {
       $monitorParams = [
-        'is_active' => (bool) $values['enable-monitor-rule-group-' . $ruleGroupId],
+        'is_active' => (bool) ($values['enable-monitor-rule-group-' . $ruleGroupId] ?? FALSE),
         'limit_group_id' => $values['limit-group-rule-group-' . $ruleGroupId] ? $values['limit-group-rule-group-' . $ruleGroupId] : 'null',
       ];
       $this->_saveGroupMonitor($ruleGroupId, $monitorParams);
@@ -223,7 +223,7 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
 
     foreach ($this->_ruleMonitors as $ruleMonitor) {
       $ret['enable-monitor-rule-group-' . $ruleMonitor['rule_group_id']] = (bool) $ruleMonitor['is_active'];
-      $ret['limit-group-rule-group-' . $ruleMonitor['rule_group_id']] = $ruleMonitor['limit_group_id'];
+      $ret['limit-group-rule-group-' . $ruleMonitor['rule_group_id']] = ($ruleMonitor['limit_group_id'] ?? '');
     }
     return $ret;
   }
@@ -237,7 +237,9 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
     $ruleMonitorGet = civicrm_api3('dupmonRuleMonitor', 'get', [
       'rule_group_id' => $ruleGroupId,
     ]);
-    $params['id'] = $ruleMonitorGet['id'];
+    // If $ruleMonitorGet['id'] is undefined, it means no such monitor exists,
+    // so we'll be creating one.
+    $params['id'] = ($ruleMonitorGet['id'] ?? NULL);
     $params['rule_group_id'] = $ruleGroupId;
     civicrm_api3('dupmonRuleMonitor', 'create', $params);
   }

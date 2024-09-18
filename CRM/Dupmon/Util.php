@@ -50,7 +50,7 @@ class CRM_Dupmon_Util {
       'contact_type' => $ruleMonitor['contact_type'],
       'is_deleted' => 0,
     ];
-    if ($ruleMonitor['limit_group_id']) {
+    if ($ruleMonitor['limit_group_id'] ?? FALSE) {
        $apiParams['group'] = ['IN' => [$ruleMonitor['limit_group_id']]];
     }
     $remainingContactCount = civicrm_api3('Contact', 'getcount', $apiParams);
@@ -356,11 +356,11 @@ class CRM_Dupmon_Util {
       $oldHash = $ruleInfo['values'][0]['hash'];
     }
     if (
-      $force || ($oldHash != $newHash)
+      $force || !isset($oldHash) || ($oldHash != $newHash)
     ) {
       // Hash has changed. Update the stored hash.
       $ruleInfoCreate = civicrm_api3('dupmonRuleInfo', 'create', [
-        'id' => $ruleInfoId,
+        'id' => ($ruleInfoId ?? NULL),
         'hash' => $newHash,
         'rule_group_id' => $ruleGroupId,
       ]);

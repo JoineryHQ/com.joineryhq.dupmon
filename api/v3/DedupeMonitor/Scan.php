@@ -32,17 +32,17 @@ function civicrm_api3_dedupe_monitor_Scan($params) {
   $batchesCreatedCount = 0;
   foreach ($ruleMonitors as $ruleMonitor) {
     $ruleCompleted = FALSE;
-    $limit = $ruleMonitor['scan_limit'];
+    $limit = ($ruleMonitor['scan_limit'] ?? NULL);
     $debugLimitGroupId = ($ruleMonitor['limit_group_id'] ?? 'null');
     $debugMonitorDescriptor = "id={$ruleMonitor['id']}, rule_group_id={$ruleMonitor['rule_group_id']}, limit_group_id={$debugLimitGroupId}";
     CRM_Dupmon_Util::debugLog("START processing monitor: $debugMonitorDescriptor", __FUNCTION__);
-    CRM_Dupmon_Util::debugLog("Starting with limit: $limit", __FUNCTION__);
+    CRM_Dupmon_Util::debugLog("Starting with limit: " . ($ruleMonitor['scan_limit'] ?? '(NONE)'), __FUNCTION__);
     if (!$limit) {
       $limit = CRM_Dupmon_Util::getNextLimitQuantum();
       CRM_Dupmon_Util::debugLog("Limit was empty; got next limit: $limit", __FUNCTION__);
     }
     while (!$ruleCompleted) {
-      $cids = CRM_Dupmon_Util::getScanContactList($ruleMonitor['contact_type'], $ruleMonitor['min_cid'], $limit, $ruleMonitor['limit_group_id']);
+      $cids = CRM_Dupmon_Util::getScanContactList($ruleMonitor['contact_type'], $ruleMonitor['min_cid'], $limit, ($ruleMonitor['limit_group_id'] ?? NULL));
       if (!empty($cids)) {
         try {
           $dupes = CRM_Dupmon_Util::scanRule($ruleMonitor['rule_group_id'], $cids);
