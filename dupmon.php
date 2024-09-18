@@ -7,6 +7,11 @@ use CRM_Dupmon_ExtensionUtil as E;
 
 // phpcs:enable
 
+/**
+ * Implements hook_civicrm_buildForm().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_buildForm/
+ */
 function dupmon_civicrm_buildForm($formName, $form) {
   if ($formName == 'CRM_Contact_Form_DedupeFind' && ($form->_action == CRM_Core_Action::PREVIEW)) {
     // Add a warning to the top of thE "use rule" form.
@@ -26,6 +31,11 @@ function dupmon_civicrm_buildForm($formName, $form) {
   }
 }
 
+/**
+ * Implements hook_civicrm_postProcess().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postProcess/
+ */
 function dupmon_civicrm_postProcess($formName, $form) {
   if ($formName == 'CRM_Contact_Form_DedupeRules') {
     if ($ruleGroupId = $form->getVar('_rgid')) {
