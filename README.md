@@ -57,6 +57,12 @@ Dedupe link for that batch to open CiviCRM's native "Find and Merge Duplicate Co
 screen showing the results of the given Dedupe Rule for that batch of duplicate
 candidates.
 
+### Monitor status dashlet
+
+This extension provides a dashlet titled "Dedupe Monitor Alert", available for display
+on the CiviCRM front page. This dashlet will inform you of any batches awaiting
+review; if no batches currently exist, it will inform you that "You're all caught up!"
+
 ## Defaults
 
 * Upon installation, all non-supervised Dedupe Rules are selected for monitoring.
@@ -78,3 +84,9 @@ tweak for performance.
 ## License
 
 The extension is licensed under [GPL-3.0](LICENSE.txt).
+
+## Support
+
+Support for this extension is handled under Joinery's ["Active Support" policy](https://joineryhq.com/software-support-levels#active-support).
+
+Public issue queue for this extension: https://github.com/JoineryHQ/com.joineryhq.dupmon/issues
