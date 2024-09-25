@@ -51,7 +51,7 @@ class CRM_Dupmon_Util {
       'is_deleted' => 0,
     ];
     if ($ruleMonitor['limit_group_id'] ?? FALSE) {
-       $apiParams['group'] = ['IN' => [$ruleMonitor['limit_group_id']]];
+      $apiParams['group'] = ['IN' => [$ruleMonitor['limit_group_id']]];
     }
     $remainingContactCount = civicrm_api3('Contact', 'getcount', $apiParams);
     if ($remainingContactCount) {
@@ -65,7 +65,8 @@ class CRM_Dupmon_Util {
       $minCid = 0;
     }
     $dupmonRuleMonitorParams['min_cid'] = $minCid;
-    CRM_Dupmon_Util::debugLog("Updating ruleMonitor with v3 params: :". json_encode($dupmonRuleMonitorParams), __FUNCTION__);
+
+    CRM_Dupmon_Util::debugLog("Updating ruleMonitor with v3 params: :" . json_encode($dupmonRuleMonitorParams), __FUNCTION__);
     civicrm_api3('dupmonRuleMonitor', 'create', $dupmonRuleMonitorParams);
   }
 
