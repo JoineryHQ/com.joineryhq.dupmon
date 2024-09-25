@@ -345,6 +345,35 @@ class CRM_Dupmon_Util {
     return $cleanedCount;
   }
 
+  /**
+   * Remove any batches for which no actual duplicates are found.
+   *
+   * @return int Number of batches removed.
+   */
+  public static function cleanupDupelessBatches() {
+    $cleanedCount = 0;
+    // Get all batches.
+    $dupmonBatchGet = civicrm_api3('DupmonBatch', 'get', [
+      'sequential' => 1,
+      'options' => ['limit' => 0],
+    ]);
+    foreach ($dupmonBatchGet['values'] as $dupmonBatch) {
+      // Get the count of currently found duplicates in this batch. If none,
+      // delete the batch (this also deletes the Group).
+      $matchesCount = CRM_Dupmon_Util::getBatchMatchesCount($dupmonBatch['id']);
+      CRM_Dupmon_Util::debugLog("Found ($matchesCount) duplicate matches in batch, id=" . $dupmonBatch['id'], __METHOD__);
+
+      if (!$matchesCount) {
+        civicrm_api3('dupmonBatch', 'delete', [
+          'id' => $dupmonBatch['id'],
+        ]);
+        CRM_Dupmon_Util::debugLog('Auto-forgot empty batch, id=' . $dupmonBatch['id'], __METHOD__);
+        $cleanedCount++;
+      }
+    }
+    return $cleanedCount;
+  }
+
   public static function getRuleHash($ruleGroupId) {
     $ruleGroup = civicrm_api3('ruleGroup', 'getSingle', [
       'id' => $ruleGroupId,
@@ -401,6 +430,30 @@ class CRM_Dupmon_Util {
         ]);
       }
     }
+  }
+
+  /**
+   * Get a count of actual duplicate pairs found for this batch, per current data.
+   *
+   * @param int $batchId ID of the DupmonBatch entity
+   *
+   * @return int
+   */
+  public static function getBatchMatchesCount(int $batchId): int {
+    $dupmonBatchGet = civicrm_api3('DupmonBatch', 'get', [
+      'sequential' => 1,
+      'id' => $batchId,
+    ]);
+    // If this batch doesn't exist, it cannot have any matches; therefore return zero.
+    if ($dupmonBatchGet['count'] = 0) {
+      return 0;
+    }
+    $dupmonBatch = $dupmonBatchGet['values'][0];
+
+    $cids = array_keys(CRM_Contact_BAO_Group::getMember($dupmonBatch['group_id'], TRUE, 0));
+    $dupesInGroup = CRM_Dedupe_Finder::dupes($dupmonBatch['rule_group_id'], $cids, FALSE);
+
+    return count($dupesInGroup);
   }
 
 }

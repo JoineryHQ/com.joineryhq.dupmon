@@ -76,12 +76,15 @@ function civicrm_api3_dedupe_monitor_Scan($params) {
 
   // Cleanup any empty batches that may be hanging around (e.g. if all of the
   // batch contacts have been deleted by deduping or other means).
-  $cleanedCount = CRM_Dupmon_Util::cleanupEmptyBatches();
+  $cleanedEmptyCount = CRM_Dupmon_Util::cleanupEmptyBatches();
+  // Clean any batches that have zero actual dedupe matches.
+  $cleanedDupelessCount = CRM_Dupmon_Util::cleanupDupelessBatches();
 
   $returnValues = [
     'Rule Monitors Processed' => $ruleMonitorsProcessed,
     'New Batches Created' => $batchesCreatedCount,
-    'Empty Batches Removed' => $cleanedCount,
+    'Empty Batches Removed' => $cleanedEmptyCount,
+    'Dupeless Batches Removed' => $cleanedDupelessCount,
   ];
   // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
   return civicrm_api3_create_success($returnValues, $params, 'DedupeMonitor', 'Scan');
