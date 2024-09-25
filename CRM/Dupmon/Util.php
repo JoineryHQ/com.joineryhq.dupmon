@@ -93,13 +93,26 @@ class CRM_Dupmon_Util {
     if ($limitGroupId) {
       $contactApiParams['where'][] = ['groups', 'IN', [$limitGroupId]];
     }
-    CRM_Dupmon_Util::debugLog("Getting contacts with api4 params: :". json_encode($contactApiParams), __FUNCTION__);
+    CRM_Dupmon_Util::debugLog("Getting contacts with api4 params: :" . json_encode($contactApiParams), __FUNCTION__);
     $contacts = civicrm_api4('Contact', 'get', $contactApiParams);
     $cids = CRM_Utils_Array::collect('id', $contacts->getArrayCopy());
     sort($cids);
     return $cids;
   }
 
+  /**
+   * Use a given dedupe rule to scan for duplicates among a given set of contact IDs.
+   *
+   * @param int $rgid System ID of the dedupe rule ("rule group")
+   * @param array $cids List of all contact IDs to be scanned.
+   *
+   * @return array
+   *   Array of duplicate triples for duplicate matches, each one
+   *   in the format returned by CRM_Dedupe_Finder::dupes().
+   *
+   * @throws CRM_Dupmon_Exception
+   * @throws PEAR_Exception
+   */
   public static function scanRule($rgid, $cids) {
     CRM_Dupmon_Util::debugLog("Scanning with rule $rgid, contact_count = " . count($cids), __FUNCTION__);
     $dbMaxQueryTimeVariableProps = self::getDbMaxQueryTimeVariableProps();
