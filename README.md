@@ -89,4 +89,4 @@ The extension is licensed under [GPL-3.0](LICENSE.txt).
 
 Support for this extension is handled under Joinery's ["Active Support" policy](https://joineryhq.com/software-support-levels#active-support).
 
-Public issue queue for this extension: https://github.com/JoineryHQ/com.joineryhq.dupmon/issues
+Public issue queue for this extension: [https://github.com/JoineryHQ/com.joineryhq.dupmon/issues](https://github.com/JoineryHQ/com.joineryhq.dupmon/issues)
