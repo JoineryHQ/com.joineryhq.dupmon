@@ -74,8 +74,8 @@ review; if no batches currently exist, it will inform you that "You're all caugh
 ## Configuration
 
 To enable or disable the monitoring of any or all Dedupe Rules, navigate to the
-Setting page at:  
-Contacts > Find and Merge Duplicate Contacts > Dedupe Monitor > Batches  
+Settings page at:  
+Contacts > Find and Merge Duplicate Contacts > Dedupe Monitor > Settings  
 (example.com/civicrm/admin/dupmon/settings?reset=1)
 
 The Settings page also includes a few Advanced Settings that you may want to 
