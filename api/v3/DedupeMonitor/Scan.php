@@ -42,6 +42,8 @@ function civicrm_api3_dedupe_monitor_Scan($params) {
       CRM_Dupmon_Util::debugLog("Limit was empty; got next limit: $limit", __FUNCTION__);
     }
     while (!$ruleCompleted) {
+      // Initialize $dupes as an empty array.
+      $dupes = [];
       $cids = CRM_Dupmon_Util::getScanContactList($ruleMonitor['contact_type'], $ruleMonitor['min_cid'], $limit, ($ruleMonitor['limit_group_id'] ?? NULL));
       if (!empty($cids)) {
         try {

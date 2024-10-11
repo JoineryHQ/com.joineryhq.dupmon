@@ -36,7 +36,12 @@ class CRM_Dupmon_Util {
       'id' => $ruleMonitor['id'],
       'scan_limit' => $limit,
     ];
-    $maxScanCid = (int) max($scanCids);
+    if (empty($scanCids)) {
+      $maxScanCid = 0;
+    }
+    else {
+      $maxScanCid = (int) max($scanCids);
+    }
     // Check to see if we've reached the end of all contacts we can scan.
     // Remember, we're proceeding through all contacts (see note *), in order by contactId;
     // so we want to know if there's even 1 of these contacts
