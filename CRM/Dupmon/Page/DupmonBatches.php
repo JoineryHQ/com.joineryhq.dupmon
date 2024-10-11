@@ -14,6 +14,7 @@ class CRM_Dupmon_Page_DupmonBatches extends CRM_Core_Page {
       'api.RuleGroup.get' => ['id' => "\$value.rule_group_id", 'return' => ['title', 'contact_type']],
       'options' => ['limit' => 0],
     ]);
+    $rows = [];
     if ($dupmonBatchGet['count']) {
       foreach ($dupmonBatchGet['values'] as $dupmonBatch) {
         $dupmonBatch['size'] = $dupmonBatch['api.GroupContact.getcount'];
@@ -21,8 +22,8 @@ class CRM_Dupmon_Page_DupmonBatches extends CRM_Core_Page {
         $dupmonBatch['rule_contact_type'] = $dupmonBatch['api.RuleGroup.get']['values'][0]['contact_type'];
         $rows[] = $dupmonBatch;
       }
-      $this->assign('rows', $rows);
     }
+    $this->assign('rows', $rows);
 
     parent::run();
   }

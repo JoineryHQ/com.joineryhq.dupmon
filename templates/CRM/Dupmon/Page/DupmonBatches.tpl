@@ -1,7 +1,7 @@
 <div class="help">
   {capture assign="settingsLink"}{crmURL p="civicrm/admin/dupmon/settings" q="reset=1" h=0}{/capture}
   <p>Dedupe Monitor scans regularly for duplicate candidates across all contacts. Duplicate candidates are grouped for review into batches shown below.</p>
-  {crmButton href="$settingsLink" class="edit" title="Configure" icon=fa-gear}{ts}Configure Dedupe Monitor{/ts}{/crmButton}
+  {crmButton href="$settingsLink" class="edit" title="Configure" icon="fa-gear"}{ts}Configure Dedupe Monitor{/ts}{/crmButton}
   <div class="clear"></div>
 </div>
 
