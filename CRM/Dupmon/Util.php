@@ -450,7 +450,7 @@ class CRM_Dupmon_Util {
       'id' => $batchId,
     ]);
     // If this batch doesn't exist, it cannot have any matches; therefore return zero.
-    if ($dupmonBatchGet['count'] = 0) {
+    if ($dupmonBatchGet['count'] == 0) {
       return 0;
     }
     $dupmonBatch = $dupmonBatchGet['values'][0];
