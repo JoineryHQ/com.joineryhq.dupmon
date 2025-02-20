@@ -15,19 +15,9 @@ use CRM_Dupmon_ExtensionUtil as E;
 function dupmon_civicrm_buildForm($formName, $form) {
   if ($formName == 'CRM_Contact_Form_DedupeFind' && ($form->_action == CRM_Core_Action::PREVIEW)) {
     // Add a warning to the top of thE "use rule" form.
-    $batchesUrl = CRM_Utils_System::url('civicrm/admin/dupmon/batches', 'reset=1', TRUE);
-    $template = '
-      <div class="clear"></div>
-      {crmButton href="' . $batchesUrl . '" class="edit" title="View Scanned Batches" icon=fa-rocket}{ts}View Scanned Batches{/ts}{/crmButton}
-      <div class="clear"></div>
-    ';
-    // Use smarty 'eval' plugin directly in PHP to parse string as template (so
-    // that we can use crmButton to make our button).
     $smarty = CRM_Core_Smarty::singleton();
-    require_once $smarty->_get_plugin_filepath('function', 'eval');
-    $compiled = smarty_function_eval(['var' => $template], $smarty);
-
-    CRM_Core_Session::setStatus(E::ts('This operation can slow or freeze your site. Please consider using the Dedupe Monitor Scanned Batches instead.') . $compiled, E::ts('Wait!'), 'no-popup');
+    $statusMessage = $smarty->fetch('CRM/Dupmon/snippet/slowWarning.tpl');
+    CRM_Core_Session::setStatus($statusMessage, E::ts('Wait!'), 'no-popup');
   }
 }
 
