@@ -18,6 +18,26 @@ class CRM_Dupmon_Page_DedupeBatch extends CRM_Core_Page {
         'id' => $batchId,
       ]);
 
+      //#12 the prevnext_cache key needs to be recreated specific to the logged in user for permissioning purposes
+      $storedCacheKeyString = CRM_Dedupe_Merger::getMergeCacheKeyString($dupmonBatch['rule_group_id'], $dupmonBatch['group_id'], [], FALSE, 0);
+      $userCacheKeyString = CRM_Dedupe_Merger::getMergeCacheKeyString($dupmonBatch['rule_group_id'], $dupmonBatch['group_id'], [], TRUE, 0);
+
+      $alreadyCached = CRM_Core_DAO::singleValueQuery("
+        SELECT count(id)
+        FROM civicrm_prevnext_cache
+        WHERE cachekey = '{$userCacheKeyString}'
+      ");
+
+      if (empty($alreadyCached)) {
+        CRM_Core_DAO::executeQuery("
+          INSERT INTO civicrm_prevnext_cache
+          (entity_table, entity_id1, entity_id2, cachekey, data, is_selected)
+          SELECT entity_table, entity_id1, entity_id2, '{$userCacheKeyString}' cachekey, data, is_selected
+          FROM civicrm_prevnext_cache
+          WHERE cachekey = '{$storedCacheKeyString}'
+        ");
+      }
+
       // Set redirect to native scan results for rgid/gid:
       $path = 'civicrm/contact/dedupefind';
       $query = [
