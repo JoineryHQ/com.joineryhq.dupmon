@@ -262,6 +262,9 @@ class CRM_Dupmon_Util {
         ]);
       }
       $batchesCreatedCount++;
+
+      //#12
+      CRM_Core_BAO_PrevNextCache::refillCache($ruleId, $dupmonBatchCreate['values'][0]['group_id'], [], FALSE, 0);
     }
     return $batchesCreatedCount;
   }
