@@ -219,7 +219,7 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
   public function setDefaultValues() {
     $result = civicrm_api3('setting', 'get', array('return' => array_keys($this->_settings)));
     $domainID = CRM_Core_Config::domainID();
-    $ret = CRM_Utils_Array::value($domainID, $result['values']);
+    $ret = $result['values'][$domainID] ?? NULL;
 
     foreach ($this->_ruleMonitors as $ruleMonitor) {
       $ret['enable-monitor-rule-group-' . $ruleMonitor['rule_group_id']] = (bool) $ruleMonitor['is_active'];
