@@ -29,7 +29,7 @@ class CRM_Dupmon_BAO_DupmonBatch extends CRM_Dupmon_DAO_DupmonBatch {
       $params['group_id'] = $groupId;
     }
 
-    CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
+    CRM_Utils_Hook::pre($hook, $entityName, $params['id'] ?? NULL, $params);
     $instance = new $className();
     $instance->copyValues($params);
     $instance->save();
