@@ -94,7 +94,6 @@ class CRM_Dupmon_Upgrader extends CRM_Extension_Upgrader_Base {
    * Modify civicrm_dupmon_rule_monitor table with new columns.
    *
    * @return TRUE on success
-   * @throws CRM_Core_Exception
    */
   public function upgrade_0001(): bool {
     $this->ctx->log->info('Applying update 0001');
@@ -111,7 +110,6 @@ class CRM_Dupmon_Upgrader extends CRM_Extension_Upgrader_Base {
    * Create unique index for civicrm_dupmon_rule_monitor.rule_group_id
    *
    * @return TRUE on success
-   * @throws CRM_Core_Exception
    */
   public function upgrade_0002(): bool {
     $this->ctx->log->info('Applying update 0003');
@@ -126,7 +124,6 @@ class CRM_Dupmon_Upgrader extends CRM_Extension_Upgrader_Base {
    * Example: Run an external SQL script.
    *
    * @return TRUE on success
-   * @throws CRM_Core_Exception
    */
   // public function upgrade_4201(): bool {
   //   $this->ctx->log->info('Applying update 4201');
@@ -139,7 +136,6 @@ class CRM_Dupmon_Upgrader extends CRM_Extension_Upgrader_Base {
    * Example: Run a slow upgrade process by breaking it up into smaller chunk.
    *
    * @return TRUE on success
-   * @throws CRM_Core_Exception
    */
   // public function upgrade_4202(): bool {
   //   $this->ctx->log->info('Planning update 4202'); // PEAR Log interface
@@ -157,7 +153,6 @@ class CRM_Dupmon_Upgrader extends CRM_Extension_Upgrader_Base {
    * millions) of records by breaking it up into smaller chunks.
    *
    * @return TRUE on success
-   * @throws CRM_Core_Exception
    */
   // public function upgrade_4203(): bool {
   //   $this->ctx->log->info('Planning update 4203'); // PEAR Log interface
