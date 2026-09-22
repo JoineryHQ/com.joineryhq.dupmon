@@ -149,7 +149,7 @@ class CRM_Dupmon_Util {
   }
 
   public static function getLimitQuanta() {
-    return array(
+    return [
       100000,
       50000,
       10000,
@@ -161,7 +161,7 @@ class CRM_Dupmon_Util {
       50,
       10,
       1,
-    );
+    ];
   }
 
   /**
@@ -187,10 +187,10 @@ class CRM_Dupmon_Util {
   }
 
   public static function getDbMaxQueryTimeVariableProps() {
-    $props = array(
+    $props = [
       'name' => '',
       'value' => '',
-    );
+    ];
     $dupmon_max_query_time = Civi::settings()->get('dupmon_max_query_time');
     $version = CRM_Utils_SQL::getDatabaseVersion();
     if (stripos($version, 'mariadb') !== FALSE) {

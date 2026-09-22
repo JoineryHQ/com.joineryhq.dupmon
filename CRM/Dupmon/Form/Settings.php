@@ -11,10 +11,10 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
 
   private $_ruleGroups;
   private $_ruleMonitors;
-  public static $settingFilter = array('group' => 'dupmon');
+  public static $settingFilter = ['group' => 'dupmon'];
   public static $extensionName = 'dupmon';
-  private $_submittedValues = array();
-  private $_settings = array();
+  private $_submittedValues = [];
+  private $_settings = [];
 
   public function __construct(
     $state = NULL,
@@ -44,7 +44,7 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
   }
 
   public static function getSettings() {
-    $settings = civicrm_api3('setting', 'getfields', array('filters' => self::$settingFilter));
+    $settings = civicrm_api3('setting', 'getfields', ['filters' => self::$settingFilter]);
     return $settings['values'];
   }
 
@@ -88,17 +88,17 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
       );
     }
 
-    $this->addButtons(array(
-      array(
+    $this->addButtons([
+      [
         'type' => 'submit',
         'name' => E::ts('Submit'),
         'isDefault' => TRUE,
-      ),
-      array(
+      ],
+      [
         'type' => 'cancel',
         'name' => E::ts('Cancel'),
-      ),
-    ));
+      ],
+    ]);
 
     $this->_buildQuickFormSettings();
     parent::buildQuickForm();
@@ -147,7 +147,7 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
           default:
             $add = 'add' . $setting['quick_form_type'];
             if ($add == 'addElement') {
-              $this->$add($setting['html_type'], $name, E::ts($setting['title']), CRM_Utils_Array::value('html_attributes', $setting, array()));
+              $this->$add($setting['html_type'], $name, E::ts($setting['title']), CRM_Utils_Array::value('html_attributes', $setting, []));
             }
             else {
               $this->$add($name, E::ts($setting['title']));
@@ -167,7 +167,7 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
         $rules_args = (array) $setting['X_form_rules_args'];
         foreach ($rules_args as $rule_args) {
           array_unshift($rule_args, $setting['name']);
-          call_user_func_array(array($this, 'addRule'), $rule_args);
+          call_user_func_array([$this, 'addRule'], $rule_args);
         }
       }
     }
@@ -217,7 +217,7 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
    * @see CRM_Core_Form::setDefaultValues()
    */
   public function setDefaultValues() {
-    $result = civicrm_api3('setting', 'get', array('return' => array_keys($this->_settings)));
+    $result = civicrm_api3('setting', 'get', ['return' => array_keys($this->_settings)]);
     $domainID = CRM_Core_Config::domainID();
     $ret = $result['values'][$domainID] ?? NULL;
 
@@ -249,7 +249,7 @@ class CRM_Dupmon_Form_Settings extends CRM_Core_Form {
       return call_user_func($setting['X_options_callback']);
     }
     else {
-      return CRM_Utils_Array::value('X_options', $setting, array());
+      return CRM_Utils_Array::value('X_options', $setting, []);
     }
   }
 

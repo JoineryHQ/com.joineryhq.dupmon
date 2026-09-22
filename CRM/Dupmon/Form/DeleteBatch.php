@@ -18,17 +18,17 @@ class CRM_Dupmon_Form_DeleteBatch extends CRM_Core_Form {
   }
 
   public function buildQuickForm() {
-    $this->addButtons(array(
-      array(
+    $this->addButtons([
+      [
         'type' => 'submit',
         'name' => E::ts('Forget batch'),
         'isDefault' => TRUE,
-      ),
-      array(
+      ],
+      [
         'type' => 'cancel',
         'name' => E::ts('Cancel'),
-      ),
-    ));
+      ],
+    ]);
 
     // Get batch info for user information.
     $this->_batchId = CRM_Utils_Request::retrieve('id', 'Int', $this, TRUE);
