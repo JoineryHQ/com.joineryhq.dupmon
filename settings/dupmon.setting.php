@@ -2,8 +2,8 @@
 
 use CRM_Dupmon_ExtensionUtil as E;
 
-return array(
-  'dupmon_max_query_time' => array(
+return [
+  'dupmon_max_query_time' => [
     'group_name' => 'Dedupe Monitor Settings',
     'group' => 'dupmon',
     'name' => 'dupmon_max_query_time',
@@ -20,8 +20,8 @@ return array(
       'required' => E::ts('%1 is a required field', [1 => 'Maximum Rule Scan Time']),
       'positiveInteger' => E::ts('%1 must be a positive integer', [1 => 'Maximum Rule Scan Time']),
     ],
-  ),
-  'dupmon_max_batch_size' => array(
+  ],
+  'dupmon_max_batch_size' => [
     'group_name' => 'Dedupe Monitor Settings',
     'group' => 'dupmon',
     'name' => 'dupmon_max_batch_size',
@@ -37,8 +37,8 @@ return array(
     'formRules' => [
       'positiveInteger' => E::ts('%1 must be a positive integer', [1 => 'Maximum Batch Size']),
     ],
-  ),
-  'dupmon_debug_log' => array(
+  ],
+  'dupmon_debug_log' => [
     'group_name' => 'Dedupe Monitor Settings',
     'group' => 'dupmon',
     'name' => 'dupmon_debug_log',
@@ -51,5 +51,5 @@ return array(
     'quick_form_type' => 'YesNo',
     'default' => 0,
     'html_type' => '',
-  ),
-);
+  ],
+];
